@@ -1,0 +1,20 @@
+<div class="row vh-90 justify-content-center align-items-center text-center">
+  <div class="col-lg-8">
+    <h2>Hello {{ user.name }},</h2>
+    <h2>What can I help with?</h2>
+
+    <div class="card-footer d-flex mt-4" id="chat-bar">
+      <div class="input-group">
+        <textarea
+          id="auto-textarea"
+          placeholder="Type your message..."
+          class="form-control type_msg"
+          [(ngModel)]="userMessage"
+          (input)="autoResizeTextArea($event)"
+        ></textarea>
+      </div>
+      <button class="btn btn-danger" [disabled]="!userMessage"><i class="fa fa-arrow-up" aria-hidden="true"></i></button>
+      
+    </div>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+#chat-bar {
+    background-color: rgb(244, 244, 244, 1);
+   padding: 10px;
+   border-radius: 30px;
+}
+/* For textarea styling */
+textarea {
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+    font-size: 14px;
+    background-color: rgb(244, 244, 244, 1);
+    border: none;
+    outline: none; /* Remove default outline */
+    resize: none; /* Prevent manual resizing */
+    overflow-y: auto; /* Enable scroll if content exceeds max height */
+    max-height: 100px; /* Limit the height */
+  }
+  
+  textarea:focus {
+    background-color: rgb(244, 244, 244, 1);
+    border: none;
+    outline: none; /* Prevent blue outline on focus */
+  }
+  
+#chat-bar button{
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+}

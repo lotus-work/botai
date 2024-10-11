@@ -1,0 +1,44 @@
+<header class="navbar-light bg-white sticky-top p-2 border-bottom" *ngIf="auth.user$ | async as user">
+    <div class="container-fluid">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none logo"><img
+                    src="https://motiongraphicplus.com/wp-content/uploads/2023/09/open-ai-logo.png" width="130px"
+                    alt="" /></a>
+
+            <ul class="nav col-12 col-lg-auto ms-lg-auto mb-2 justify-content-center mb-md-0 me-md-4">
+                <li>
+                    <a href="" class="nav-link px-2 link-dark">New Chat</a>
+                </li>
+                <li>
+                    
+                    <a [routerLink]="'/customkb'"  class="nav-link px-2 link-dark">Custom ChatGPT</a>
+                </li>
+                <li>
+                    <a href="help" class="nav-link px-2 link-dark">Help </a>
+                </li>
+            </ul>
+            <div class="dropdown text-end">
+                <a href="#" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false"
+                    class="d-block link-dark text-decoration-none dropdown-toggle"><img alt="mdo" width="42" height="42"
+                        class="rounded-circle" src="{{ user.picture }}" /></a>
+                <ul aria-labelledby="dropdownUser1" class="dropdown-menu text-small" style="">
+                    <li>
+                        <a href="#" class="dropdown-item">Welcome : {{ user.name }}</a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider" />
+                    </li>
+                    <li>
+                        <a href="/settings" class="dropdown-item">Settings</a>
+                    </li>
+                   
+                    <li *ngIf="auth.isAuthenticated$ | async">
+                        <button (click)="logout()" class="dropdown-item">
+                            <i aria-hidden="true" class="fa fa-sign-out"></i> Sign Out
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>

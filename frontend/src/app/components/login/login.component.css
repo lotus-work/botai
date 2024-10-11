@@ -1,0 +1,17 @@
+.login-page{
+    background-image: linear-gradient(rgba(0, 0, 0, .815), rgba(0, 0, 0, .689)), url(https://pfm.ai/images/loginscreen.png), linear-gradient(180deg, #00C47C 24.58%, #C8FFB5 68.5%, #FFE4AE 82.3%);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: bottom;
+    width: 100%;
+    object-fit: contain;
+    color: #fff;
+}
+
+#terms-condition a{
+    text-decoration: none;
+}
+
+#terms-condition a:hover{
+    text-decoration: underline;
+}
