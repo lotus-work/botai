@@ -27,6 +27,6 @@ export class HomeComponent {
     return authKeys.length >= 2 && authKeys.every(key => localStorage.getItem(key));
   }
   async logout() {
-    this.auth.logout({ logoutParams: { returnTo: "http://localhost:4200/login" } });
+    this.auth.logout({ logoutParams: { returnTo: "https://chatgptbotai.netlify.app/login" } });
   }
 }

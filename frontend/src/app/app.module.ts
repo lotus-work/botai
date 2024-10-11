@@ -40,7 +40,7 @@ import { WorkspaceComponent } from './components/workspace/workspace.component';
       cacheLocation: 'localstorage',
       useRefreshTokens: true, // Replace with your Auth0 client ID
       authorizationParams: {
-        redirect_uri: "http://localhost:4200"
+        redirect_uri: "https://chatgptbotai.netlify.app"
       } 
     })
   ],
