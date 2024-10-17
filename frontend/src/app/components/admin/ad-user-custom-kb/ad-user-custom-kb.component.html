@@ -1,0 +1,83 @@
+<app-ad-navbar></app-ad-navbar>
+
+<section class="my-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="admin/home">Home</a></li>
+              <li class="breadcrumb-item active" aria-current="page">
+                Custom ChatGPT
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <h2>Edit Custom Instructions</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-8">
+          <form>
+            <div class="mb-3">
+              <label for="exampleFormControlTextarea1" class="form-label fw-bold"
+                >Custom Instructions
+              </label>
+              <div id="emailHelp" class="form-text">
+                What would you like ChatGPT to know about you to provide better
+                responses?
+  
+                <textarea
+                  class="form-control"
+                  id="exampleFormControlTextarea1"
+                  rows="3"
+                ></textarea>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="exampleFormControlTextarea1" class="form-label fw-bold"
+                >How would you like ChatGPT to respond?</label
+              >
+              <textarea
+                class="form-control"
+                id="exampleFormControlTextarea1"
+                rows="3"
+              ></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </form>
+        </div>
+        
+      </div>
+      <div class="row mt-4">
+        <div class="col-lg-8">
+            <h2>Test Chatbot</h2>
+
+            <form>
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="" aria-label="" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-secondary" type="button" id="button-addon2">Send  <i class="fa fa-telegram" aria-hidden="true"></i></button>
+                  </div>
+                  
+               
+                <div class="mb-3">
+                  <label for="exampleFormControlTextarea1" class="form-label fw-bold"
+                    >Bot Reply </label
+                  >
+                  <textarea
+                    class="form-control"
+                    id="exampleFormControlTextarea1"
+                    rows="3"
+                  ></textarea>
+
+                <button class="btn btn-danger mt-2">Clear</button>
+                </div>
+              </form>
+        </div>
+      </div>
+    </div>
+  </section>
+  

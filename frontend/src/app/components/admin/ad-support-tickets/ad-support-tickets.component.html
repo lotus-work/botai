@@ -1,0 +1,92 @@
+<app-ad-navbar></app-ad-navbar>
+
+<section class="my-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="admin/home">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Manage Users</li>
+          </ol>
+        </nav>
+      </div>
+
+      <div class="col-lg-12" id="users">
+        <div class="card">
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Created</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let ticket of tickets">
+                  <th scope="row">{{ ticket.name }}</th>
+                  <td>{{ ticket.email }}</td>
+                  <td>{{ ticket.date }}</td>
+                  <td>
+                    <!-- View Button to Trigger the Modal -->
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      data-bs-toggle="modal"
+                      data-bs-target="#ticketModal"
+                      (click)="selectTicket(ticket)"
+                    >
+                      <i class="fa fa-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-success mx-2">
+                        Reply <i class="fa fa-reply" aria-hidden="true"></i>
+                      </button>
+                    <!-- Delete Button -->
+                    <button type="button" class="btn btn-danger">
+                      <i class="fa fa-trash-o" aria-hidden="true"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Displaying Ticket Details -->
+  <div
+    class="modal fade"
+    id="ticketModal"
+    tabindex="-1"
+    aria-labelledby="ticketModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ticketModalLabel">{{ selectedTicket?.name }}'s Ticket</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Email:</strong> {{ selectedTicket?.email }}</p>
+          <p><strong>Issue:</strong> {{ selectedTicket?.issue }}</p>
+          <p><strong>Date Created:</strong> {{ selectedTicket?.date }}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

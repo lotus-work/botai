@@ -1,0 +1,61 @@
+<app-ad-navbar></app-ad-navbar>
+
+<section class="my-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="admin/home">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Manage Users
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-lg-12" id="users">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                              <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Phone</th>
+                                <th scope="col">Created</th>
+                                <th scope="col">Action</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let person of people">
+                                    <th scope="row">{{ person.name }}</th>
+                                    <td>{{ person.email }}</td>
+                                    <td>{{ person.phone }}</td>
+                                    <td>{{ person.date }}</td>
+                                    <td>
+                                      <a
+                                        class="btn btn-primary dropdown-toggle me-2"
+                                        href="#"
+                                        role="button"
+                                        data-bs-toggle="dropdown"
+                                        aria-expanded="false"
+                                      ></a>
+                                      <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="admin/user/edit">Edit User Profile</a></li>
+                                        <li><a class="dropdown-item" href="admin/user/customkb">Set Custom ChatGPT KB</a></li>
+                                        <li><a class="dropdown-item" href="admin/user/useage-stats">Usage Stats</a></li>
+                                      </ul>
+                                      <button type="button" class="btn btn-danger">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                      </button>
+                                    </td>
+                                  </tr>
+                            </tbody>
+                          </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
