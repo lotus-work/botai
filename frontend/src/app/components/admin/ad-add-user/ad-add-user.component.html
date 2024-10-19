@@ -1,0 +1,95 @@
+<app-ad-navbar></app-ad-navbar>
+<section class="my-5">
+    <div class="container">
+       <div class="row">
+        <div class="col-lg-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="admin/home">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Add User</li>
+                </ol>
+            </nav>
+        </div>
+       </div>
+        <div class="row g-5">
+            <div class="col-lg-6">
+                <form>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" id="phone" name="phone" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="exampleInputEmail1"
+                            name="email"  />
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Add Organization Name</label>
+                        <input type="email" class="form-control" id="exampleInputEmail1"
+                            name="email"  />
+                    </div>
+                    <p class="fw-bold pt-3">Add Chat GPT Assistant</p>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Assistant Name</label>
+                        <input type="email" class="form-control" id="exampleInputEmail1"
+                            name="email"  />
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label">Assistant Id</label>
+                        <input type="email" class="form-control" id="exampleInputEmail1"
+                            name="email"  />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            </div>
+            <div class="col-lg-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <p class="fw-bold">Organizations Members: </p>
+                    <button class="btn btn-primary " type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Member</button>
+                </div>
+                <ol class="list-group mt-2">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Anuj Kumar<small>(anujkumar&#64;gmail.com)</small>
+
+                        <span class="badge text-bg-danger rounded-pill"><i class="fa fa-trash-o" aria-hidden="true"></i></span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">Peter Parkar <small>(peterparkar&#64;gmail.com)</small>
+
+                        <span class="badge text-bg-danger rounded-pill"><i class="fa fa-trash-o" aria-hidden="true"></i></span>
+                    </li>
+                  </ol>
+            </div>
+        </div>
+        
+    </div>
+</section>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add Organization Member</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Name</label>
+              <input type="text" class="form-control" id="recipient-name">
+            </div>
+            <div class="mb-3">
+              <label for="recipient-name" class="col-form-label">Email</label>
+              <input type="text" class="form-control" id="recipient-name">
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Send Invite</button>
+        </div>
+      </div>
+    </div>
+  </div>

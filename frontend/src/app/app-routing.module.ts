@@ -15,6 +15,9 @@ import { AdSupportTicketsComponent } from './components/admin/ad-support-tickets
 import { AdEditUserComponent } from './components/admin/ad-edit-user/ad-edit-user.component';
 import { AdUserCustomKbComponent } from './components/admin/ad-user-custom-kb/ad-user-custom-kb.component';
 import { AdUserUsageStatsComponent } from './components/admin/ad-user-usage-stats/ad-user-usage-stats.component';
+import { AdAddUserComponent } from './components/admin/ad-add-user/ad-add-user.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { IntegrateWebsiteComponent } from './components/integrate-website/integrate-website.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -23,6 +26,8 @@ const routes: Routes = [
   { path: 'help', component: SupportComponent },
   { path: "customkb", component: CustomkbComponent },
   { path: "workspace", component: WorkspaceComponent },
+  { path: "dashboard", component: DashboardComponent },
+  { path: "integrate-website", component: IntegrateWebsiteComponent },
 
   { path: "admin/login", component: AdLoginComponent },
   { path: "admin/settings", component: AdSettingsComponent },
@@ -30,6 +35,7 @@ const routes: Routes = [
   { path: "admin/users", component: AdUserComponent },
   { path: "admin/page/settings", component: AdPageSettingsComponent },
   { path: "admin/support-tickets", component: AdSupportTicketsComponent },
+  { path: "admin/user/add", component: AdAddUserComponent },
   { path: "admin/user/edit", component: AdEditUserComponent },
   { path: "admin/user/customkb", component: AdUserCustomKbComponent },
   { path: "admin/user/useage-stats", component: AdUserUsageStatsComponent }

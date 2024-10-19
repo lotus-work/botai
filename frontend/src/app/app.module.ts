@@ -28,6 +28,9 @@ import { AdSupportTicketsComponent } from './components/admin/ad-support-tickets
 import { AdEditUserComponent } from './components/admin/ad-edit-user/ad-edit-user.component';
 import { AdUserUsageStatsComponent } from './components/admin/ad-user-usage-stats/ad-user-usage-stats.component';
 import { AdUserCustomKbComponent } from './components/admin/ad-user-custom-kb/ad-user-custom-kb.component';
+import { AdAddUserComponent } from './components/admin/ad-add-user/ad-add-user.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { IntegrateWebsiteComponent } from './components/integrate-website/integrate-website.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +53,10 @@ import { AdUserCustomKbComponent } from './components/admin/ad-user-custom-kb/ad
     AdSupportTicketsComponent,
     AdEditUserComponent,
     AdUserUsageStatsComponent,
-    AdUserCustomKbComponent
+    AdUserCustomKbComponent,
+    AdAddUserComponent,
+    DashboardComponent,
+    IntegrateWebsiteComponent
   ],
   imports: [
     BrowserModule,
