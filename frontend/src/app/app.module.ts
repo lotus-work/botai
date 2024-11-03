@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -22,7 +22,6 @@ import { AdNavbarComponent } from './components/admin/ad-navbar/ad-navbar.compon
 import { AboutUsComponent } from './components/about-us/about-us.component';
 import { AdSettingsComponent } from './components/admin/ad-settings/ad-settings.component';
 import { AdPageSettingsComponent } from './components/admin/ad-page-settings/ad-page-settings.component';
-import { NgxSuneditorModule } from 'ngx-suneditor';
 import { AdUserComponent } from './components/admin/ad-user/ad-user.component';
 import { AdSupportTicketsComponent } from './components/admin/ad-support-tickets/ad-support-tickets.component';
 import { AdEditUserComponent } from './components/admin/ad-edit-user/ad-edit-user.component';
@@ -31,6 +30,10 @@ import { AdUserCustomKbComponent } from './components/admin/ad-user-custom-kb/ad
 import { AdAddUserComponent } from './components/admin/ad-add-user/ad-add-user.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { IntegrateWebsiteComponent } from './components/integrate-website/integrate-website.component';
+import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxSpinnerModule } from "ngx-spinner";
+import { NgToastModule } from 'ng-angular-popup';
 
 @NgModule({
   declarations: [
@@ -59,21 +62,24 @@ import { IntegrateWebsiteComponent } from './components/integrate-website/integr
     IntegrateWebsiteComponent
   ],
   imports: [
+    NgToastModule,
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
-    ServerModule,
+    BrowserAnimationsModule,
+    NgxSpinnerModule,
     FormsModule,
-    NgxSuneditorModule,
     AuthModule.forRoot({
       domain: 'dev-mb84z7eiijwz0uio.us.auth0.com',  // Replace with your Auth0 domain
       clientId: '2NuvcQlTmLBouOR96gGVy6e3pxNJgqZ8',
       cacheLocation: 'localstorage',
       useRefreshTokens: true, // Replace with your Auth0 client ID
       authorizationParams: {
-        redirect_uri: "https://chatgptbotai.netlify.app"
+        redirect_uri: "http://localhost:4200"
       } 
     })
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [
     provideClientHydration()
   ],

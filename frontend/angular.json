@@ -37,6 +37,7 @@
               }
             ],
             "styles": [
+              "./node_modules/ngx-spinner/animations/ball-scale-multiple.css",
               "src/styles.css"
             ],
             "scripts": [],
@@ -74,7 +75,8 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "appName:build:production"
+              "buildTarget": "appName:build:production",
+               "proxyConfig": "src/proxy.conf.json"
             },
             "development": {
               "buildTarget": "appName:build:development"

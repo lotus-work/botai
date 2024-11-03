@@ -18,6 +18,7 @@ import { AdUserUsageStatsComponent } from './components/admin/ad-user-usage-stat
 import { AdAddUserComponent } from './components/admin/ad-add-user/ad-add-user.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { IntegrateWebsiteComponent } from './components/integrate-website/integrate-website.component';
+import { AdAuthGuardService } from './services/admin/ad-auth-guard-service/ad-auth-guard.service';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -30,15 +31,15 @@ const routes: Routes = [
   { path: "integrate-website", component: IntegrateWebsiteComponent },
 
   { path: "admin/login", component: AdLoginComponent },
-  { path: "admin/settings", component: AdSettingsComponent },
-  { path: "admin/home", component: AdHomeComponent },
-  { path: "admin/users", component: AdUserComponent },
-  { path: "admin/page/settings", component: AdPageSettingsComponent },
-  { path: "admin/support-tickets", component: AdSupportTicketsComponent },
-  { path: "admin/user/add", component: AdAddUserComponent },
-  { path: "admin/user/edit", component: AdEditUserComponent },
-  { path: "admin/user/customkb", component: AdUserCustomKbComponent },
-  { path: "admin/user/useage-stats", component: AdUserUsageStatsComponent }
+  { path: "admin/settings", component: AdSettingsComponent , canActivate:[AdAuthGuardService]},
+  { path: "admin/home", component: AdHomeComponent , canActivate:[AdAuthGuardService]},
+  { path: "admin/users", component: AdUserComponent , canActivate:[AdAuthGuardService]},
+  { path: "admin/page/settings", component: AdPageSettingsComponent , canActivate:[AdAuthGuardService]},
+  { path: "admin/support-tickets", component: AdSupportTicketsComponent , canActivate:[AdAuthGuardService]},
+  { path: "admin/user/add", component: AdAddUserComponent , canActivate:[AdAuthGuardService]},
+  { path: "admin/user/edit", component: AdEditUserComponent , canActivate:[AdAuthGuardService]},
+  { path: "admin/user/customkb", component: AdUserCustomKbComponent , canActivate:[AdAuthGuardService]},
+  { path: "admin/user/useage-stats", component: AdUserUsageStatsComponent , canActivate:[AdAuthGuardService]}
 ];
 
 @NgModule({

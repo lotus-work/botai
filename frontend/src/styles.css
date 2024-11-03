@@ -20,3 +20,26 @@ h1,h2,h3,h4,h5{
 .vh-90 {
     height: 90vh;
 }
+
+
+/* For Chrome, Edge, and Safari */
+::-webkit-scrollbar {
+    width: 3px; /* Adjust the width as needed */
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f125; /* Light background for the track */
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: #f1f1f125; /* Lighter color for the scrollbar thumb */
+    border-radius: 10px; /* Rounded corners */
+    border: 2px solid #f1f1f125; /* Border to give a gap effect */
+  }
+  
+  /* For Firefox */
+  * {
+    scrollbar-width: thin; /* Makes the scrollbar thinner */
+    scrollbar-color: #f1f1f125 #f1f1f125; /* Thumb color and track color */
+  }
+  

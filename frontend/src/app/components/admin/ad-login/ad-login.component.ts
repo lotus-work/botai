@@ -1,10 +1,41 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router'; // Import Router for navigation
+import { AdServiceLoginService } from '../../../services/admin/ad-service-login/ad-service-login.service';
+import { AdminLoginResponse } from '../../../interface/admin/admin-login-response.model';
 
 @Component({
   selector: 'app-ad-login',
   templateUrl: './ad-login.component.html',
-  styleUrl: './ad-login.component.css'
+  styleUrls: ['./ad-login.component.css']
 })
-export class AdLoginComponent {
+export class AdLoginComponent implements OnInit {
+  emailAddress: string = '';
+  password: string = '';
 
+  constructor(private loginService: AdServiceLoginService, private router: Router) {}
+
+  ngOnInit(): void {
+   
+  }
+  onSubmit() {
+    console.log('Attempting to log in with:', this.emailAddress);
+    this.loginService.login(this.emailAddress, this.password).subscribe({
+      next: (response: AdminLoginResponse) => {
+        console.log("Login response received");
+        if (response.isSuccessful) {
+          console.log('Login successful:', response.result);
+          localStorage.setItem('userData', JSON.stringify(response.result));
+          this.router.navigate(['/admin/home']);
+        } else {
+          console.error('Login failed:', response || 'Unknown error');
+        }
+      },
+      error: (error) => {
+        console.error('Login error:', error);
+      },
+      complete: () => {
+        console.log("Login process completed successfully");
+      }
+    });
+  }
 }

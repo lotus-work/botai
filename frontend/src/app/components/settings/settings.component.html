@@ -1,41 +1,44 @@
 <app-navbar></app-navbar>
 <section class="my-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Settings</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <h2>Manage your profile</h2>
-                <p>Update your personal information</p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-8">
-                <form>
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="name" [(ngModel)]="user.name" name="name" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="phone" class="form-label">Phone Number</label>
-                        <input type="text" class="form-control" id="phone" name="phone" />
-                    </div>
-                    <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="exampleInputEmail1" [(ngModel)]="user.email"
-                            name="email" disabled />
-                    </div>
-                    <button type="submit" class="btn btn-primary">Update</button>
-                </form>
-            </div>
-        </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Settings</li>
+          </ol>
+        </nav>
+      </div>
     </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <h2>Manage your profile</h2>
+        <p>Update your personal information</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-8">
+        <form (ngSubmit)="updateUser()">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" [(ngModel)]="user.name" name="name" />
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input type="text" class="form-control" id="phone" [(ngModel)]="user.phoneNumber" name="phoneNumber" />
+          </div>
+          <div class="mb-3">
+            <label for="address" class="form-label">Address</label>
+            <input type="text" class="form-control" id="address" [(ngModel)]="user.address" name="address" />
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input type="email" class="form-control" id="email" [(ngModel)]="user.emailAddress" name="email" disabled />
+          </div>
+          <button type="submit" class="btn btn-primary" [disabled]="!user.name || !user.phoneNumber || !user.address || !user.emailAddress">Update</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </section>

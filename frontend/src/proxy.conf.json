@@ -1,0 +1,18 @@
+{
+    "/api": {
+      "target": "http://localhost:9000",
+      "secure": true,
+      "changeOrigin": true,
+      "pathRewrite": {
+        "^/api": ""
+      }
+    },
+      "/upload":{
+          "target": "https://api.imgbb.com/1/upload",
+          "secure": true,
+          "pathRewrite":{
+              "^/upload":""
+          },
+          "changeOrigin": true
+      }
+  }

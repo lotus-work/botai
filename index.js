@@ -1,39 +1,42 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const cors = require('cors'); 
-const bodyParser = require('body-parser')
-// const url = 'mongodb://localhost:27017/'
-
-const port  = process.env.PORT || 9000;
-
-// Initliaze express server 
-const app = express();app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }))
-
-app.use(bodyParser.json())
-
-const url = 'mongodb+srv://lotusbiswas:lotusbiswas@cluster0.1zfsoap.mongodb.net/test'
-
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const app = express();
+const path = require('path');
+const port = process.env.PORT || 9000;
+require('dotenv').config();
+// Database connection
+const url = 'mongodb+srv://lotusbiswas:lotusbiswas@cluster0.1zfsoap.mongodb.net/botai';
 mongoose.set('strictQuery', false);
-mongoose.connect(url, {useNewUrlParser: true})
+mongoose.connect(url, { useNewUrlParser: true });
 
-const con  = mongoose.connection
+const con = mongoose.connection;
+con.on('open', () => {
+    console.log('Connected to MongoDB');
+});
 
-con.on('open', ()=>{
-    console.log('connected');
-})
+// Middleware
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-// app.use('/', (req,res)=>{
-//     res.json({
-//      "status": "Live working fine !"
-//     });
-//  });
+// Routes
+const userRouter = require('./routes/user');
+const adminRouter = require('./routes/admin');
+app.use('/user', userRouter);
+app.use('/admin', adminRouter);
 
+app.get('/embed.js', (req, res) => {
+    res.sendFile(path.join(__dirname, '', 'embed.js'));
+});
 
+// Root endpoint
+app.get('/', (req, res) => {
+    res.send({ status: "running" });
+});
 
-app.get('/',(req,res)=>{
-    res.send({status:"running"});
-})
-app.listen(port,()=>{
-    console.log( `App listing at ${port}`);
-})
+// Start the server
+app.listen(port, () => {
+    console.log(`App listening at ${port}`);
+});
