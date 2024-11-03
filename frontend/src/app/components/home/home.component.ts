@@ -24,7 +24,7 @@ export class HomeComponent {
   }
 
   async logout() {
-    this.auth.logout({ logoutParams: { returnTo: "http://localhost:4200/login" } });
+    this.auth.logout({ logoutParams: { returnTo: "https://chatgptbotai.netlify.app/login" } });
   }
 
     createWorkspace(): void {

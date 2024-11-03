@@ -1,4 +1,4 @@
 export const environment = {
     production: false,
-    baseUrl: 'http://localhost:9000'  // Add your actual base URL here
+    baseUrl: 'https://botai-7k46.onrender.com'  // Add your actual base URL here
   };

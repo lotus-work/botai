@@ -1,6 +1,6 @@
 {
     "/api": {
-      "target": "http://localhost:9000",
+      "target": "https://botai-7k46.onrender.com",
       "secure": true,
       "changeOrigin": true,
       "pathRewrite": {

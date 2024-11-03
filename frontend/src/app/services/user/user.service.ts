@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = `http://localhost:9000/user`;
+  private apiUrl = `https://botai-7k46.onrender.com/user`;
 
   constructor(private http: HttpClient) {}
 

@@ -10,7 +10,7 @@ export class OktaService {
     this.widget = new OktaSignIn({
       baseUrl: 'https://dev-158606.oktapreview.com',
       clientId: 'RLroj4NiQtyPWWthGUnN',
-      redirectUri: 'http://localhost:4200',
+      redirectUri: 'https://chatgptbotai.netlify.app',
       authParams: {
         responseType: ['id_token', 'token']
       }
