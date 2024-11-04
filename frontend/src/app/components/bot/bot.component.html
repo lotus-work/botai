@@ -1,6 +1,6 @@
-<!-- <div class="row vh-90 justify-content-center align-items-center text-center">
+<div class="row vh-90 justify-content-center align-items-center text-center" id="firstrow" *ngIf="showFirstRow"> 
   <div class="col-lg-8">
-    <h2>Hello {{ user.name }},</h2>
+    <h2>Hello {{ user?.name }},</h2>
     <h2>What can I help with?</h2>
 
     <div class="card-footer d-flex mt-4" id="chat-bar">
@@ -13,33 +13,30 @@
           (input)="autoResizeTextArea($event)"
         ></textarea>
       </div>
-      <button class="btn btn-danger" [disabled]="!userMessage"><i class="fa fa-arrow-up" aria-hidden="true"></i></button>
-      
+      <button class="btn btn-danger" (click)="sendMessage()" [disabled]="!userMessage"><i class="fa fa-arrow-up" aria-hidden="true"></i></button>
     </div>
   </div>
-</div> -->
+</div>
 
-
-<div class="row">
+<div class="row" id="secondrow" *ngIf="!showFirstRow"> 
   <div class="col-lg-12 chat">
     <div class="card">
       <div class="card-body msg_card_body" #scrollContainer>
         <ul class="messages">
+          <!-- Static message from bot to greet the user -->
           <div class="d-flex justify-content-start mb-4">
             <div class="img_cont_msg">
-              <img
-                src="https://mikey.michaelthehomebuyer.ca/assets/image/mikey_logo.png"
-                class="rounded-circle user_img_msg">
+              <img src="https://mikey.michaelthehomebuyer.ca/assets/image/mikey_logo.png" class="rounded-circle user_img_msg">
             </div>
             <div class="msg_cotainer_send" id="bot-msg">
-              Hi, {{user.name}}.  How can I assist you today?
+              Hi, {{user?.name}}. How can I assist you today?
             </div>
           </div>
 
+          <!-- Display chat messages -->
           <li *ngFor="let message of chatMessages" [class]="message.role + ' message'">
-            <div *ngIf="message.role == 'user'; else elseBlock">
+            <div *ngIf="message.role === 'user'; else elseBlock">
               <div class="d-flex justify-content-end mb-4">
-
                 <div class="msg_cotainer">
                   {{ message.content }}
                 </div>
@@ -47,59 +44,44 @@
             </div>
 
             <ng-template #elseBlock>
-
-              <div  *ngIf="message.content == '...'; else elseBlockBotLoading">
+              <div *ngIf="message.content === '...'; else elseBlockBotLoading">
                 <div class="d-flex justify-content-start mb-4">
                   <div class="img_cont_msg">
-                    <img
-                      src="https://mikey.michaelthehomebuyer.ca/assets/image/mikey_logo.png"
-                      class="rounded-circle user_img_msg">
+                    <img src="https://mikey.michaelthehomebuyer.ca/assets/image/mikey_logo.png" class="rounded-circle user_img_msg">
                   </div>
                   <div class="msg_cotainer_send" id="bot-msg">
                     <div class="loader"> 
                       <span></span> 
-                      <span ></span> 
-                      <span ></span>
+                      <span></span> 
+                      <span></span>
                     </div> 
                   </div>
                 </div>
               </div>
-            
             </ng-template>
 
             <ng-template #elseBlockBotLoading>
               <div class="d-flex justify-content-start mb-4">
                 <div class="img_cont_msg">
-                  <img
-                    src="https://mikey.michaelthehomebuyer.ca/assets/image/mikey_logo.png"
-                    class="rounded-circle user_img_msg">
+                  <img src="https://mikey.michaelthehomebuyer.ca/assets/image/mikey_logo.png" class="rounded-circle user_img_msg">
                 </div>
                 <div class="msg_cotainer_send" id="bot-msg">
                   {{ message.content }}
                 </div>
-
               </div>
             </ng-template>
-
-
-
           </li>
         </ul>
       </div>
-      <div *ngIf="isTextareaDisabled == false">
+      <div *ngIf="!isTextareaDisabled">
         <div class="card-footer">
           <div class="input-group">
-
             <textarea name="" class="form-control type_msg" placeholder="Type your message..." [(ngModel)]="userMessage"
               (keyup.enter)="sendMessage()" [disabled]="isTextareaDisabled"></textarea>
-
             <button class="btn btn-danger" (click)="sendMessage()" [disabled]="!userMessage">Ask</button>
-
-            <!-- <div class="input-group-append">
-                  <span class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></span>
-              </div> -->
           </div>
         </div>
       </div>
+    </div>
   </div>
 </div>
