@@ -32,7 +32,8 @@ export class HomeComponent {
       this.userService.createOrganization(this.user._id, this.workspaceName).subscribe({
         next: (response) => {
           if (response.isSuccessful) {
-            this.router.navigate(['/workspace']);
+            console.log( response.result._id);
+            this.router.navigate(['/workspace/' + response.result.organization._id]);
           }
         },
         error: (error) => console.error('Error creating organization:', error)
@@ -43,7 +44,8 @@ export class HomeComponent {
   this.userService.checkOrganization(this.user._id).subscribe({
     next: (hasWorkspace) => {
       if (hasWorkspace.isSuccessful == true) {
-        this.router.navigate(['/workspace']);
+        console.log(hasWorkspace.result._id);
+        this.router.navigate(['/workspace/' + hasWorkspace.result.organization._id]);
       } else {
         const manageWorkspaceModal = new bootstrap.Modal(document.getElementById('exampleModal'));
         manageWorkspaceModal.show();

@@ -33,7 +33,12 @@ export class UserService {
     return this.http.get<any>(`${this.apiUrl}/organization/check/${userId}`)
       .pipe(catchError(this.errorHandler));
   }
-
+  addOrganizationMember(organizationId: string, name: string, emailAddress: string): Observable<any> {
+    const payload = { organizationId, name, emailAddress };
+    return this.http.post<any>(`${this.apiUrl}/organization/members/add`, payload).pipe(
+      catchError(this.errorHandler)
+    );
+  }
   private errorHandler(error: HttpErrorResponse) {
     console.error('Error occurred:', error);
     return throwError(error.message || 'Server Error');

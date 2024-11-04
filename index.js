@@ -24,8 +24,10 @@ app.use(bodyParser.json());
 // Routes
 const userRouter = require('./routes/user');
 const adminRouter = require('./routes/admin');
+const conversationRouter = require('./routes/conversation');
 app.use('/user', userRouter);
 app.use('/admin', adminRouter);
+app.use('/conversation', conversationRouter);
 
 app.get('/embed.js', (req, res) => {
     res.sendFile(path.join(__dirname, '', 'embed.js'));

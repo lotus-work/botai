@@ -26,7 +26,7 @@ const routes: Routes = [
   { path: 'settings', component: SettingsComponent },
   { path: 'help', component: SupportComponent },
   { path: "customkb", component: CustomkbComponent },
-  { path: "workspace", component: WorkspaceComponent },
+  { path: "workspace/:id", component: WorkspaceComponent },
   { path: "dashboard", component: DashboardComponent },
   { path: "integrate-website", component: IntegrateWebsiteComponent },
 

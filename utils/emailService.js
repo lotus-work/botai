@@ -3,8 +3,12 @@ const nodemailer = require('nodemailer');
 class EmailService {
     constructor() {
         this.transporter = nodemailer.createTransport({
+            connectionTimeout: 10000, // 10 seconds
+            greetingTimeout: 5000, // 5 seconds
+            socketTimeout: 20000, // 20 seconds
             host: "smtp.gmail.com",
-            port: 587,
+            port: 465,
+            secure: true, 
             auth: {
             user: process.env.SYSTEM_EMAIL_ADDRESS,
             pass: process.env.SYSTEM_EMAIL_PASSWORD,
@@ -14,7 +18,7 @@ class EmailService {
 
     async sendEmail(to, subject, text, html) {
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: process.env.SYSTEM_EMAIL_ADDRESS,
             to, 
             subject,
             text,
