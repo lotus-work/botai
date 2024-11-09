@@ -36,6 +36,7 @@ import { NgxSpinnerModule } from "ngx-spinner";
 import { NgToastModule } from 'ng-angular-popup';
 import { SafePipe } from './pipe/safe.pipe';
 import { LoadchatComponent } from './components/loadchat/loadchat.component';
+import { ExportchatComponent } from './components/exportchat/exportchat.component';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { LoadchatComponent } from './components/loadchat/loadchat.component';
     IntegrateWebsiteComponent,
     SafePipe,
     LoadchatComponent,
+    ExportchatComponent,
   ],
   imports: [
     NgToastModule,

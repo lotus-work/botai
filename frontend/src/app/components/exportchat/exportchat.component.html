@@ -1,0 +1,35 @@
+<app-navbar></app-navbar>
+<section class="my-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Export Chats</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-12">
+        <h2>Export Chats</h2>
+        <p>Select time frame and download your conversations</p>
+        <div class="d-flex">
+          <div class="form-group col-3 me-3">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate" class="form-control" [(ngModel)]="startDate" name="startDate" required>
+          </div>
+          <div class="form-group col-3">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate" class="form-control" [(ngModel)]="endDate" name="endDate" required>
+          </div>
+        </div>
+      
+        
+        <!-- Export button -->
+        <button class="btn btn-primary mt-3" (click)="exportChats()">Export Chats</button>
+      </div>
+    </div>
+  </div>
+</section>

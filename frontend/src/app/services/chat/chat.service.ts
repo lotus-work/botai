@@ -88,10 +88,21 @@ export class ChatService {
       .pipe(catchError(this.errorHandler));
   }
 
+
+  exportConversations(startDate: string, endDate: string, userId: string): Observable<Blob> {
+    console.log(`Exporting conversations from ${startDate} to ${endDate} for userId: ${userId}`);
+    // The HTTP request now uses the query parameters directly in the URL
+    return this.http.get(`${this.apiUrl}export/bydate/${startDate}/${endDate}/${userId || ''}`, {
+      responseType: 'blob'  // Expecting a blob (ZIP file)
+    });
+  }
+  
+
   deleteConversation(conversationId: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}${conversationId}`)
       .pipe(catchError(this.errorHandler));
   }
+
   
   errorHandler(error: HttpErrorResponse){
     console.error(error);

@@ -19,6 +19,7 @@ import { AdAddUserComponent } from './components/admin/ad-add-user/ad-add-user.c
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { IntegrateWebsiteComponent } from './components/integrate-website/integrate-website.component';
 import { AdAuthGuardService } from './services/admin/ad-auth-guard-service/ad-auth-guard.service';
+import { ExportchatComponent } from './components/exportchat/exportchat.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -29,6 +30,7 @@ const routes: Routes = [
   { path: "workspace/:id", component: WorkspaceComponent },
   { path: "dashboard", component: DashboardComponent },
   { path: "integrate-website", component: IntegrateWebsiteComponent },
+  { path: "exportchats", component: ExportchatComponent },
 
   { path: "admin/login", component: AdLoginComponent },
   { path: "admin/settings", component: AdSettingsComponent , canActivate:[AdAuthGuardService]},

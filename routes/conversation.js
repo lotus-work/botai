@@ -4,7 +4,12 @@ const Users = require('../models/user');
 const Conversation = require('../models/conversation'); // Correctly import the Conversation model
 const Message = require('../models/message'); // Correctly import the Message model
 const ApiResponse = require('../utils/apiResponse');
-
+const archiver = require('archiver');
+const moment = require('moment');
+const mongoose = require('mongoose');
+const path = require('path');  // Add this line
+const fs = require('fs');  // Use the regular fs module for createWriteStream
+const fsPromises = require('fs/promises'); 
 // POST /conversations - Create a new conversation or add a message to an existing one
 router.post('/add', async (req, res) => {
     try {
@@ -177,6 +182,94 @@ router.get('/export/:conversationId', async (req, res) => {
 function removeHtmlTags(str) {
     return str.replace(/<\/?[^>]+(>|$)/g, "");  // Matches HTML tags and removes them
 }
+
+router.get('/export/bydate/:startDate/:endDate/:userId?', async (req, res) => {
+    try {
+        const { startDate, endDate, userId } = req.params; // Access from req.params
+
+        // Check if both startDate and endDate are provided
+        if (!startDate || !endDate) {
+            return res.status(400).json({ success: false, message: 'Start date and end date are required.' });
+        }
+
+        // Parse the dates
+        const start = moment(startDate, 'YYYY-MM-DD').startOf('day');
+        const end = moment(endDate, 'YYYY-MM-DD').endOf('day');
+        const pipeline = [
+            {
+                $match: {
+                    updatedAt: { $gte: start.toDate(), $lte: end.toDate() }
+                }
+            }
+        ];
+
+        // If userId is provided and valid, add it to the pipeline
+        if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+            pipeline.push({
+                $match: {
+                    userId: new mongoose.Types.ObjectId(userId)
+                }
+            });
+        }
+
+        // Execute the aggregation
+        const conversations = await Conversation.aggregate(pipeline);
+
+        if (!conversations.length) {
+            return res.status(404).json({ success: false, message: 'No conversations found in the specified date range.' });
+        }
+
+        // Prepare a temporary directory
+        const tempDir = path.join(__dirname, 'temp_conversations');
+        await fsPromises.mkdir(tempDir, { recursive: true });  // Correctly using fs.promises.mkdir
+
+        const zipFilePath = path.join(__dirname, 'conversations.zip');
+        const output = fs.createWriteStream(zipFilePath);  // Non-promisified fs.createWriteStream
+        const archive = archiver('zip', { zlib: { level: 9 } });
+
+        archive.pipe(output);
+
+        for (const conversation of conversations) {
+            const messages = await Message.find({ conversationId: conversation._id });
+            const user = userId ? await Users.findById(userId) : null;
+            const username = user ? user.name : 'Unknown User';
+
+            let txtContent = `User Id: ${userId || 'N/A'}\nUsername: ${username}\nAssistant Id: ${conversation.assistantId}\nConversation Name: ${conversation.conversationName}\n\nChat History\n`;
+
+            messages.forEach(message => {
+                txtContent += `User: ${removeHtmlTags(message.userPrompt)}\nBot: ${removeHtmlTags(message.botReply)}\nCreated At: ${message.createdAt}\nUpdated At: ${message.updatedAt}\n\n`;
+            });
+
+            const filePath = path.join(tempDir, `conversation_${conversation._id}.txt`);
+            await fsPromises.writeFile(filePath, txtContent);
+            archive.file(filePath, { name: `conversation_${conversation._id}.txt` });
+        }
+
+        await archive.finalize();
+
+        output.on('close', async () => {
+            res.setHeader('Content-Disposition', 'attachment; filename=conversations.zip');
+            res.setHeader('Content-Type', 'application/zip');
+            res.sendFile(zipFilePath, async (err) => {
+                if (err) {
+                    console.error('Error sending ZIP file:', err);
+                    return res.status(500).json({ success: false, message: 'Error sending the ZIP file.' });
+                }
+
+                try {
+                    await fsPromises.rm(tempDir, { recursive: true, force: true });
+                    await fsPromises.unlink(zipFilePath);
+                } catch (cleanupError) {
+                    console.error('Error cleaning up temporary files:', cleanupError);
+                }
+            });
+        });
+    } catch (error) {
+        console.error('Error exporting conversations:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
 
 router.delete('/:conversationId', async (req, res) => {
     try {
