@@ -4,6 +4,7 @@ const Users = require('../models/user');
 const Conversation = require('../models/conversation'); // Correctly import the Conversation model
 const Message = require('../models/message'); // Correctly import the Message model
 const ApiResponse = require('../utils/apiResponse');
+
 // POST /conversations - Create a new conversation or add a message to an existing one
 router.post('/add', async (req, res) => {
     try {
@@ -37,6 +38,8 @@ router.post('/add', async (req, res) => {
             createdAt: new Date()
         });
         await newMessage.save();
+        conversation.updatedAt = new Date();
+        await conversation.save();
 
         return res.status(201).json({
             success: true,
@@ -76,6 +79,43 @@ router.get('/:conversationId', async (req, res) => {
     }
 });
 
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Step 1: Find all conversations for the user, sorted by createdAt
+        const conversations = await Conversation.find({ userId })
+            .sort({ createdAt: -1 }); // Sort by createdAt in descending order
+
+        if (!conversations.length) {
+            return res.status(404).json({
+                success: false,
+                message: 'No conversations found for this user.'
+            });
+        }
+
+        // Step 2: Retrieve messages for each conversation
+        const conversationsWithMessages = await Promise.all(conversations.map(async (conversation) => {
+            const messages = await Message.find({ conversationId: conversation._id });
+            return {
+                conversation,
+                messages
+            };
+        }));
+
+        // Step 3: Return the conversations with messages
+        return res.status(200).json({
+            success: true,
+            conversations: conversationsWithMessages
+        });
+    } catch (error) {
+        console.error('Error retrieving user conversations:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
 
 router.get('/export/:conversationId', async (req, res) => {
     try {
@@ -111,8 +151,12 @@ router.get('/export/:conversationId', async (req, res) => {
         txtContent += `Chat History\n`;
 
         messages.forEach(message => {
-            txtContent += `User: ${message.userPrompt}\n`;
-            txtContent += `Bot: ${message.botReply}\n`;
+            // Remove HTML tags from userPrompt and botReply
+            const userPrompt = removeHtmlTags(message.userPrompt);
+            const botReply = removeHtmlTags(message.botReply);
+
+            txtContent += `User: ${userPrompt}\n`;
+            txtContent += `Bot: ${botReply}\n`;
             txtContent += `Created At: "${message.createdAt}",\n`;
             txtContent += `Updated At: "${message.updatedAt}"\n\n`;
         });
@@ -127,6 +171,39 @@ router.get('/export/:conversationId', async (req, res) => {
             status: 500,
             isSuccessful: false,
             result: 'Internal server error'
+        });
+    }
+});
+function removeHtmlTags(str) {
+    return str.replace(/<\/?[^>]+(>|$)/g, "");  // Matches HTML tags and removes them
+}
+
+router.delete('/:conversationId', async (req, res) => {
+    try {
+        const { conversationId } = req.params;
+
+        const conversation = await Conversation.findById(conversationId);
+
+        if (!conversation) {
+            return res.status(404).json({
+                success: false,
+                message: 'Conversation not found'
+            });
+        }
+
+        await Message.deleteMany({ conversationId: conversation._id });
+
+        await Conversation.findByIdAndDelete(conversation._id);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Conversation and associated messages deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting conversation and messages:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error'
         });
     }
 });

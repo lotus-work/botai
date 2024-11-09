@@ -16,7 +16,7 @@ export class SettingsComponent {
     public auth: AuthService,
     private userService: UserService,
     private spinner: NgxSpinnerService,
-    private _toast: NgToastService // Inject toast service
+    private _toast: NgToastService 
   ) {}
 
   ngOnInit(): void {

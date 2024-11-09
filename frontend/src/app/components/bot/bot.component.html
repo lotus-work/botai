@@ -1,6 +1,9 @@
 <div class="row vh-90 justify-content-center align-items-center text-center" id="firstrow" *ngIf="showFirstRow"> 
   <div class="col-lg-8">
-    <h2>Hello {{ user?.name }},</h2>
+    <div *ngIf="auth.user$ | async as user">
+
+      <h2>Hello {{ user.name }},</h2>
+    </div>
     <h2>What can I help with?</h2>
 
     <div class="card-footer d-flex mt-4" id="chat-bar">
@@ -38,7 +41,7 @@
             <div *ngIf="message.role === 'user'; else elseBlock">
               <div class="d-flex justify-content-end mb-4">
                 <div class="msg_cotainer">
-                  {{ message.content }}
+                  <div [innerHTML]="message.content" ></div>
                 </div>
               </div>
             </div>
@@ -65,8 +68,8 @@
                 <div class="img_cont_msg">
                   <img src="https://mikey.michaelthehomebuyer.ca/assets/image/mikey_logo.png" class="rounded-circle user_img_msg">
                 </div>
-                <div class="msg_cotainer_send" id="bot-msg">
-                  {{ message.content }}
+                <div class="msg_cotainer_send" id="bot-msg" >
+                  <div [innerHTML]="message.content"></div>
                 </div>
               </div>
             </ng-template>

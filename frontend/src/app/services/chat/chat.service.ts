@@ -39,6 +39,11 @@ export class ChatService {
     }).pipe(catchError(this.errorHandler));
   }
 
+  getAllChatsByUserId(userId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}user/${userId}`)
+      .pipe(catchError(this.errorHandler));
+  }
+
   getCatchResponse(): Observable<any> {
     const url = this.rootURL3 + "michael-the-home-buyer/mhb-advisor/instruction";
 
@@ -80,6 +85,11 @@ export class ChatService {
   // Method 4: Export Conversation by Conversation ID and User ID
   exportConversation(conversationId: string, userId: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}export/${conversationId}?userId=${userId}`, { responseType: 'blob' as 'json' })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  deleteConversation(conversationId: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}${conversationId}`)
       .pipe(catchError(this.errorHandler));
   }
   

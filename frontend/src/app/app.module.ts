@@ -34,6 +34,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxSpinnerModule } from "ngx-spinner";
 import { NgToastModule } from 'ng-angular-popup';
+import { SafePipe } from './pipe/safe.pipe';
+import { LoadchatComponent } from './components/loadchat/loadchat.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +61,9 @@ import { NgToastModule } from 'ng-angular-popup';
     AdUserCustomKbComponent,
     AdAddUserComponent,
     DashboardComponent,
-    IntegrateWebsiteComponent
+    IntegrateWebsiteComponent,
+    SafePipe,
+    LoadchatComponent,
   ],
   imports: [
     NgToastModule,
