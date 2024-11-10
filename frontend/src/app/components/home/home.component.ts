@@ -176,6 +176,7 @@ export class HomeComponent {
   newChatOpen(){
     this.selectedConversationId = "";
     this.selectedUserId = "";
+    window.location.reload();
   }
   
 }

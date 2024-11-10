@@ -18,15 +18,14 @@
         <div class="d-flex">
           <div class="form-group col-3 me-3">
             <label for="startDate">Start Date:</label>
-            <input type="date" id="startDate" class="form-control" [(ngModel)]="startDate" name="startDate" required>
+            <input type="date" id="startDate" class="form-control" [(ngModel)]="startDate" name="startDate" required [min]="startDate" [max]="endDate">
           </div>
           <div class="form-group col-3">
             <label for="endDate">End Date:</label>
-            <input type="date" id="endDate" class="form-control" [(ngModel)]="endDate" name="endDate" required>
+            <input type="date" id="endDate" class="form-control" [(ngModel)]="endDate" name="endDate" required [min]="startDate" [max]="endDate" [attr.disabled]="!startDate ? true : null">
           </div>
         </div>
-      
-        
+
         <!-- Export button -->
         <button class="btn btn-primary mt-3" (click)="exportChats()">Export Chats</button>
       </div>

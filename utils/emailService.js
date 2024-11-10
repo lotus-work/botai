@@ -2,35 +2,49 @@ const nodemailer = require('nodemailer');
 
 class EmailService {
     constructor() {
+        // Initialize transporter
         this.transporter = nodemailer.createTransport({
-            connectionTimeout: 10000, // 10 seconds
-            greetingTimeout: 5000, // 5 seconds
-            socketTimeout: 20000, // 20 seconds
             host: "smtp.gmail.com",
             port: 465,
-            secure: true, 
+            secure: true,
             auth: {
-            user: process.env.SYSTEM_EMAIL_ADDRESS,
-            pass: process.env.SYSTEM_EMAIL_PASSWORD,
-        },
+                user: process.env.SYSTEM_EMAIL_ADDRESS,
+                pass: process.env.SYSTEM_EMAIL_PASSWORD,
+            },
+            connectionTimeout: 10000,
+            greetingTimeout: 5000,
+            socketTimeout: 20000,
         });
     }
 
-    async sendEmail(to, subject, text, html) {
+    async sendEmail(to, subject, text, html, attachment = null) {
+        // Construct mail options
         const mailOptions = {
             from: process.env.SYSTEM_EMAIL_ADDRESS,
-            to, 
+            to,
             subject,
             text,
             html,
+            ...(attachment ? { attachments: [{ filename: attachment.filename, content: attachment.content }] } : {}),
         };
 
+        // Logging mail options for debugging
+        console.log("Mail options:", {
+            to,
+            subject,
+            hasAttachment: !!attachment,
+            attachmentDetails: attachment ? { filename: attachment.filename } : null,
+        });
+
         try {
-            await this.transporter.sendMail(mailOptions);
-            console.log(`Email sent to ${to}`);
+            // Attempt to send email
+            const info = await this.transporter.sendMail(mailOptions);
+            console.log(`Email successfully sent to ${to}:`, info);
+            return { success: true, info }; // Return status and info
         } catch (error) {
-            console.error(`Failed to send email: ${error.message}`);
-            throw new Error(`Failed to send email: ${error.message}`);
+            // Log any errors
+            console.error(`Failed to send email to ${to}: ${error.message}`);
+            return { success: false, error: error.message }; // Return error details
         }
     }
 }

@@ -3,21 +3,21 @@ import { ChatService } from '../../services/chat/chat.service';
 import { AuthService } from '@auth0/auth0-angular';
 import { NgToastService } from 'ng-angular-popup';
 import { NgxSpinnerService } from 'ngx-spinner';
+import moment from 'moment';
 
 @Component({
   selector: 'app-exportchat',
   templateUrl: './exportchat.component.html',
-  styleUrl: './exportchat.component.css'
+  styleUrls: ['./exportchat.component.css']
 })
 export class ExportchatComponent implements OnInit {
 
-  startDate: string = "";
-  endDate: string = "";
+  startDate: string = '';
+  endDate: string = '';
   user: any = {};
 
-  constructor(private chatService: ChatService,  public auth: AuthService,
-    private _toast: NgToastService,private spinner: NgxSpinnerService, ) {}
-
+  constructor(private chatService: ChatService, public auth: AuthService,
+              private _toast: NgToastService, private spinner: NgxSpinnerService) {}
 
   ngOnInit() {
     const today = new Date();
@@ -51,34 +51,35 @@ export class ExportchatComponent implements OnInit {
     }
     this.spinner.show();
     this.chatService.exportConversations(this.startDate, this.endDate, this.user._id)
-    .subscribe((response: Blob) => {
-      setTimeout(() => {
-        this.spinner.hide();
-      }, 100);
-      this._toast.success({ detail: "SUCCESS", summary: 'Download started..', position: 'br' });
+      .subscribe((response: Blob) => {
+        setTimeout(() => {
+          this.spinner.hide();
+        }, 100);
+        this._toast.success({ detail: "SUCCESS", summary: 'Download started..', position: 'br' });
 
-      // Create a temporary URL for the Blob to trigger download
-      const url = window.URL.createObjectURL(response);
-      
-      // Create a link element to programmatically trigger the download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'chats_export_'+ this.startDate + '.zip';  // Default name for the download file
-      document.body.appendChild(a);
-      a.click();
-      
-      // Clean up by removing the link element
-      document.body.removeChild(a);
-  
-      // Release the object URL
-      window.URL.revokeObjectURL(url);
-    }, error => {
-      setTimeout(() => {
-        this.spinner.hide();
-      }, 1000);
-      this._toast.error({ detail: "ERROR", summary: 'Error exporting conversation', position: 'br' });
-      console.error("Error exporting chats", error);
-      alert("Failed to export chats.");
-    });
-  }  
+        // Create a temporary URL for the Blob to trigger download
+        const url = window.URL.createObjectURL(response);
+        
+        // Create a link element to programmatically trigger the download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'chats_export_' + this.startDate + '.zip';  // Default name for the download file
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up by removing the link element
+        document.body.removeChild(a);
+
+        // Release the object URL
+        window.URL.revokeObjectURL(url);
+      }, error => {
+        setTimeout(() => {
+          this.spinner.hide();
+        }, 1000);
+        this._toast.error({ detail: "ERROR", summary: 'Error exporting conversation', position: 'br' });
+        console.error("Error exporting chats", error);
+        alert("Failed to export chats.");
+      });
+  }
+
 }
