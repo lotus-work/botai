@@ -40,7 +40,7 @@ export class HomeComponent {
             this.user = JSON.parse(localStorageUser);
             this.getAllChats(this.user._id);
           }else{
-            window.location.reload();
+            
             this.userService.addUser(user.name, user.email)
               .subscribe({
                 next: (response) => {
@@ -48,11 +48,13 @@ export class HomeComponent {
                     localStorage.setItem('user', JSON.stringify(response.result.user));
                     console.log(response.result.user._id);
                       this.getAllChats(response.result.user._id);
+                    window.location.reload();
                   } else {
                     console.error('User addition failed:', response);
                   }
                 },
                 error: (err) => {
+                  window.location.reload();
                   console.error('API error:', err);
                 }
               });
