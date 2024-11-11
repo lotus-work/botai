@@ -7,7 +7,8 @@ const mongoose = require('mongoose');
 const { OrganizationMembers } = require('../models/organizationMember');
 const EmailService = require('../utils/emailService');
 const { encrypt, decrypt } = require('../utils/encryptionUtility');
-
+const Conversation = require("../models/conversation"); 
+const Message = require("../models/message"); 
 router.post('/add', async (req, res) => {
     const { name, phoneNumber, emailAddress } = req.body;
 
@@ -253,8 +254,49 @@ router.get('/organization/check/:userid', async (req, res) => {
     }
 });
 
+router.delete('/organization/:organizationId/member/:userId', async (req, res) => {
+    const { organizationId, userId } = req.params;
 
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
+    try {
+        const organization = await Organizations.findById(organizationId);
+        if (!organization) {
+            return ApiResponse.sendResponse(res, 404, false, 'Organization not found');
+        }
 
+        const memberRecord = await OrganizationMembers.findOne({ organizationId, userId });
+        if (!memberRecord) {
+            return ApiResponse.sendResponse(res, 404, false, 'User is not a member of this organization');
+        }
+
+        const memberDelete = await OrganizationMembers.deleteOne({ organizationId, userId }, { session });
+        const userDelete = await Users.deleteOne({ _id: userId }, { session });
+        const conversationsDelete = await Conversation.deleteMany({ userId: userId }, { session });
+        const messagesDelete = await Message.deleteMany({ userId: userId }, { session });
+
+        await session.commitTransaction();
+        session.endSession();
+
+        return ApiResponse.sendResponse(res, 200, true, {
+            message: 'User and associated records deleted successfully',
+            details: {
+                memberDelete,
+                userDelete,
+                conversationsDelete,
+                messagesDelete
+            }
+        });
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+
+        return ApiResponse.sendResponse(res, 500, false, {
+            message: 'Error occurred while deleting user and associated records',
+            error: error.message
+        });
+    }
+});
 
 module.exports = router;

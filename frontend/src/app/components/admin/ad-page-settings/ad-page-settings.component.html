@@ -5,7 +5,7 @@
             <div class="col-lg-12">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="admin/home">Home</a></li>
+                        <li class="breadcrumb-item"><a routerLink="admin/home">Home</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Manage Page Settings</li>
                     </ol>
                 </nav>
@@ -13,26 +13,53 @@
         </div>
         <div class="row">
             <div class="col-lg-8">
-                <form>
+                <form (ngSubmit)="updatePageSettings()">
                     <h2>About Us</h2>
                     <div class="mb-3">
-                        <label for="name" class="form-label fw-bold">Edit About Us</label>
-                        
-                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        <label for="aboutUs" class="form-label fw-bold">Edit About Us</label>
+                        <textarea
+                            [(ngModel)]="pageSettings.aboutUs"
+                            name="aboutUs"
+                            class="form-control"
+                            id="aboutUs"
+                            rows="3"
+                            required>
+                        </textarea>
                     </div>
 
-                    <h2 class="mt-5"> Terms of use</h2>
+                    <h2 class="mt-5">Terms of Use</h2>
                     <div class="mb-3">
-                        <label for="name" class="form-label fw-bold">Edit Terms of use</label>
-                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        <label for="termsOfUse" class="form-label fw-bold">Edit Terms of Use</label>
+                        <textarea
+                            [(ngModel)]="pageSettings.termsOfUse"
+                            name="termsOfUse"
+                            class="form-control"
+                            id="termsOfUse"
+                            rows="3"
+                            required>
+                        </textarea>
                     </div>
 
-                    <h2 class="mt-5"> Privacy Policy</h2>
+                    <h2 class="mt-5">Privacy Policy</h2>
                     <div class="mb-3">
-                        <label for="name" class="form-label fw-bold">Edit Privacy Policy</label>
-                        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                        <label for="privacyPolicy" class="form-label fw-bold">Edit Privacy Policy</label>
+                        <textarea
+                            [(ngModel)]="pageSettings.privacyPolicy"
+                            name="privacyPolicy"
+                            class="form-control"
+                            id="privacyPolicy"
+                            rows="3"
+                            required>
+                        </textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Update</button>
+                    
+                    <!-- Disable button until all fields are filled -->
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        [disabled]="!allFieldsFilled()">
+                        Update
+                    </button>
                 </form>
             </div>
         </div>

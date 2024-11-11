@@ -49,9 +49,6 @@ export class WorkspaceComponent implements OnInit {
     );
   }
 
-  removeMember(memberId: string): void {
-    console.log(`Removing member with ID: ${memberId}`);
-  }
 
   sendInvitation() {
     this.spinner.show();
@@ -64,6 +61,9 @@ export class WorkspaceComponent implements OnInit {
           this._toast.success({ detail: "SUCCESS", summary: 'Invitation sent successfully!', position: 'br' });
           this.name = '';
           this.emailAddress = '';
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         },
         error => {
           setTimeout(() => {
@@ -71,7 +71,42 @@ export class WorkspaceComponent implements OnInit {
           }, 1000);
           
           this._toast.error({ detail: "ERROR", summary: 'Error sending invitation: ' + error, position: 'br' });
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
         }
       );
+  }
+
+  removeMember(memberId: string): void {
+    if (confirm("Are you sure you want to remove this member?")) {
+      this.spinner.show();
+      this.userService.removeMember(this.organizationId, memberId).subscribe(
+        response => {
+          this.spinner.hide();
+          if (response.isSuccessful) {
+            this._toast.success({ detail: "SUCCESS", summary: 'Member removed successfully!', position: 'br' });
+            // Refresh the members list
+            this.members = this.members.filter(member => member._id !== memberId);
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            this._toast.error({ detail: "ERROR", summary: 'Failed to remove member.', position: 'br' });
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }
+        },
+        error => {
+          this.spinner.hide();
+          console.error('Error removing member:', error);
+          this._toast.error({ detail: "ERROR", summary: 'Error removing member: ' + error, position: 'br' });
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        }
+      );
+    }
   }
 }

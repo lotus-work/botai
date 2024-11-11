@@ -34,6 +34,13 @@ export class HomeComponent {
         this.auth.user$.subscribe(user => {
           if (user) {
          if(user.name && user.email){
+
+          const localStorageUser = localStorage.getItem('user');
+          if (localStorageUser) {
+            this.user = JSON.parse(localStorageUser);
+            this.getAllChats(this.user._id);
+          }else{
+            window.location.reload();
             this.userService.addUser(user.name, user.email)
               .subscribe({
                 next: (response) => {
@@ -49,6 +56,8 @@ export class HomeComponent {
                   console.error('API error:', err);
                 }
               });
+          }
+            
          }
 
           }

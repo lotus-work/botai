@@ -39,6 +39,13 @@ export class UserService {
       catchError(this.errorHandler)
     );
   }
+
+  removeMember(organizationId: string, userId: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/organization/${organizationId}/member/${userId}`).pipe(
+      catchError(this.errorHandler)
+    );
+  }
+  
   private errorHandler(error: HttpErrorResponse) {
     console.error('Error occurred:', error);
     return throwError(error.message || 'Server Error');
