@@ -1,60 +1,139 @@
 <app-ad-navbar></app-ad-navbar>
 <section class="my-5">
     <div class="container">
-       <div class="row">
-        <div class="col-lg-12">
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="admin/home">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Edit User</li>
-                </ol>
-            </nav>
+        <div class="row">
+            <div class="col-lg-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="admin/home">Home</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Edit User
+                        </li>
+                    </ol>
+                </nav>
+            </div>
         </div>
-       </div>
         <div class="row g-5">
             <div class="col-lg-6">
-                <form>
+                <form (ngSubmit)="updateUserDetails()">
                     <div class="mb-3">
-                        <label for="name" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" />
+                      <label for="name" class="form-label">Name</label>
+                      <input type="text" class="form-control" id="name" name="name" [(ngModel)]="userData.name" required />
                     </div>
                     <div class="mb-3">
-                        <label for="phone" class="form-label">Phone Number</label>
-                        <input type="text" class="form-control" id="phone" name="phone" />
+                      <label for="phone" class="form-label">Phone Number</label>
+                      <input type="text" class="form-control" id="phone" name="phone" [(ngModel)]="userData.phoneNumber" required />
                     </div>
                     <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="exampleInputEmail1"
-                            name="email"  />
+                      <label for="email" class="form-label">Email Address</label>
+                      <input type="email" class="form-control" id="email" name="email" [(ngModel)]="userData.emailAddress" required />
                     </div>
                     <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Edit Organization Name</label>
-                        <input type="email" class="form-control" id="exampleInputEmail1"
-                            name="email"  />
+                      <label for="address" class="form-label">Address</label>
+                      <input type="text" class="form-control" id="address" name="address" [(ngModel)]="userData.address" />
+                    </div>
+                    <div class="mb-3">
+                      <label for="role" class="form-label">Role</label>
+                      <select class="form-control" id="role" name="role" [(ngModel)]="userData.role" required>
+                        <option value="User">User</option>
+                        <option value="Organization Member">Organization Member</option>
+                        <option value="Admin">Admin</option>
+                      </select>
+                    </div>
+                    <div class="mb-3 form-check">
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="isOwner"
+                        name="isOwner"
+                        [(ngModel)]="userData.isOwner"
+                      />
+                      <label for="isOwner" class="form-check-label">Is Owner</label>
+                    </div>
+                    <div class="mb-3 form-check">
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="isActive"
+                        name="isActive"
+                        [(ngModel)]="userData.isActive"
+                      />
+                      <label for="isActive" class="form-check-label">Is Active</label>
+                    </div>
+                    <div class="mb-3" *ngIf="userInfo.isOwner">
+                      <label for="organization" class="form-label">Edit Organization Name</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="organization"
+                        name="organization"
+                        [(ngModel)]="userData.organizationName"
+                      />
                     </div>
                     <button type="submit" class="btn btn-primary">Update</button>
-                </form>
+                  </form>
             </div>
-            <div class="col-lg-4">
-                <p class="fw-bold">Organizations Member:</p>
-                <ol class="list-group mt-2">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">Anuj Kumar
-
-                        <span class="badge text-bg-danger rounded-pill"><i class="fa fa-trash-o" aria-hidden="true"></i></span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">Peter Parkar
-
-                        <span class="badge text-bg-danger rounded-pill"><i class="fa fa-trash-o" aria-hidden="true"></i></span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">Andrew Dixon
-                        <span class="badge text-bg-danger rounded-pill"><i class="fa fa-trash-o" aria-hidden="true"></i></span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">Stephen Max
-                        <span class="badge text-bg-danger rounded-pill"><i class="fa fa-trash-o" aria-hidden="true"></i></span>
-                    </li>
-                  </ol>
+            <div class="col-lg-4" *ngIf="userInfo.isOwner">
+                <div *ngIf="userInfo.organization._id; else noOrganization">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <p class="fw-bold">Organization Members:</p>
+                        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Add Member
+                        </button>
+                    </div>
+                    <ol class="list-group mt-2" *ngIf="organizationMembers.length > 0; else noMembers">
+                        <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let member of organizationMembers">
+                            <div>
+                                {{ member.name }}
+                                <span style="font-size: 12px">({{ member.email }})</span>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <span class="badge text-bg-warning rounded-pill" (click)="editMember(member.userId)">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                </span>
+                                <span class="badge text-bg-danger rounded-pill" (click)="removeMember(member.organizationId, member.userId)">
+                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                </span>
+                            </div>
+                        </li>
+                    </ol>
+            
+                    <ng-template #noMembers>
+                        <p class="text-muted">No organization members</p>
+                    </ng-template>
+                </div>
+                <ng-template #noOrganization>
+                    <p class="text-muted">No organization found. Please create an organization first to manage members.</p>
+                </ng-template>
             </div>
+            
         </div>
-        
     </div>
 </section>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add Organization Member</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="member-name" class="col-form-label">Name</label>
+                <input type="text" class="form-control" id="member-name" [(ngModel)]="newMember.name" name="name">
+              </div>
+              <div class="mb-3">
+                <label for="member-email" class="col-form-label">Email</label>
+                <input type="email" class="form-control" id="member-email" [(ngModel)]="newMember.email" name="email">
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" (click)="sendInvite()">Send Invite</button>
+          </div>
+      </div>
+    </div>
+  </div>

@@ -17,13 +17,36 @@ export class AdPageSettingsComponent implements OnInit {
     updatedBy: ''
   };
 
-  constructor(private pageSettingsService: AdServiceSettingsService,  private spinner: NgxSpinnerService,
-    private _toast: NgToastService) {}
+  constructor(
+    private pageSettingsService: AdServiceSettingsService,  
+    private spinner: NgxSpinnerService,
+    private _toast: NgToastService
+  ) {}
 
   ngOnInit(): void {
     // Retrieve user ID from local storage and assign it to updatedBy
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
     this.pageSettings.updatedBy = userData.id || ''; // Adjust to match the correct ID property in local storage
+
+    // Fetch existing page settings and populate the form
+    this.getPageSettings();
+  }
+
+  // Method to fetch page settings
+  getPageSettings(): void {
+    this.spinner.show();
+    this.pageSettingsService.getPageSettings('all').subscribe(
+      (response) => {
+        this.spinner.hide();
+        if (response.isSuccessful && response.result) {
+          this.pageSettings = { ...this.pageSettings, ...response.result }; // Merge with existing values
+        }
+      },
+      (error) => {
+        this.spinner.hide();
+        this._toast.error({ detail: "ERROR", summary: 'Error fetching page settings', position: 'br' });
+      }
+    );
   }
 
   // Check if all fields have values
@@ -35,17 +58,17 @@ export class AdPageSettingsComponent implements OnInit {
     );
   }
 
-  // Method to call updatePageSettings from the service
-  updatePageSettings() {
+  // Method to update page settings
+  updatePageSettings(): void {
     this.spinner.show();
     this.pageSettingsService.updatePageSettings(this.pageSettings).subscribe(
-      response => {
+      (response) => {
         this.spinner.hide();
         if (response.isSuccessful) {
           this._toast.success({ detail: "SUCCESS", summary: 'Page settings updated successfully!', position: 'br' });
         }
       },
-      error => {
+      (error) => {
         this.spinner.hide();
         this._toast.error({ detail: "ERROR", summary: 'Error updating page settings', position: 'br' });
       }

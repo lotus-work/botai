@@ -1,64 +1,113 @@
 <app-ad-navbar></app-ad-navbar>
 
 <section class="my-5">
-    <div class="container">
-        <div class="row">
-          <div class="col-lg-12 pb-3">
-            <nav aria-label="breadcrumb">
-                <div class="d-flex justify-content-between align-items-center">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="admin/home">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Manage Users</li>
-                    </ol>
-                    <a class="btn btn-primary" type="button" href="admin/user/add">Add User</a>
-                </div>
-            </nav>
-        </div>
-            <div class="col-lg-12" id="users">
-                <div class="card">
-                    <div class="card-body">
-                        <table class="table">
-                            <thead>
-                              <tr>
-                                <th scope="col">Name</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Organization</th>
-                                <th scope="col">Created</th>
-                                <th scope="col">Action</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let person of people">
-                                    <th scope="row">{{ person.name }}</th>
-                                    <td>{{ person.email }}</td>
-                                    <td>{{ person.organization }}</td>
-                                    <td>{{ person.date }}</td>
-                                    <td>
-                                      <a
-                                        class="btn btn-primary dropdown-toggle me-2"
-                                        href="#"
-                                        role="button"
-                                        data-bs-toggle="dropdown"
-                                        aria-expanded="false"
-                                      ></a>
-                                      <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="admin/user/edit">Edit User Profile</a></li>
-                                        <li><a class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">Set Chat GPT Assistant</a></li>
-                                        <li><a class="dropdown-item" href="admin/user/useage-stats">Usage Stats</a></li>
-                                      </ul>
-                                      <button type="button" class="btn btn-danger">
-                                        <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                      </button>
-                                    </td>
-                                  </tr>
-                            </tbody>
-                          </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 pb-3">
+        <nav aria-label="breadcrumb">
+          <div class="d-flex justify-content-between align-items-center">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a href="admin/home">Home</a></li>
+              <li class="breadcrumb-item active" aria-current="page">
+                Manage Users
+              </li>
+            </ol>
+            <a class="btn btn-primary" type="button" href="admin/user/add"
+              >Add User</a
+            >
+          </div>
+        </nav>
+      </div>
 
+      <!-- Tabs for Owners and Members -->
+      <div class="col-lg-12">
+        <ul class="nav nav-tabs" id="userTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a
+              class="nav-link active"
+              id="owners-tab"
+              data-bs-toggle="tab"
+              href="#owners"
+              role="tab"
+              aria-controls="owners"
+              aria-selected="true"
+              >Owners</a
+            >
+          </li>
+        </ul>
+        <div class="tab-content" id="userTabsContent">
+          <div
+            class="tab-pane fade show active"
+            id="owners"
+            role="tabpanel"
+            aria-labelledby="owners-tab"
+          >
+            <div class="card mt-3">
+              <div class="card-body">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Organization</th>
+                      <th scope="col">Created</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let user of owners">
+                      <th scope="row">{{ user.user.name }}</th>
+                      <td>{{ user.user.emailAddress }}</td>
+                      <td>{{ user.organizations?.name || "N/A" }}</td>
+                      <td>{{ user.user.createdAt | date : "medium" }}</td>
+                      <td>
+                        <a
+                          class="btn btn-primary dropdown-toggle me-2"
+                          href="#"
+                          role="button"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
+                        ></a>
+                        <ul class="dropdown-menu">
+                          <li>
+                            <a
+                              class="dropdown-item"
+                              href="admin/user/edit/{{ user.user._id }}"
+                              >Edit User Profile</a
+                            >
+                          </li>
+                          <li>
+                            <a
+                              class="dropdown-item"
+                              type="button"
+                              (click)="setAssistantDetails(user)"
+                              data-bs-toggle="modal"
+                              data-bs-target="#exampleModal"
+                              >Set Chat GPT Assistant</a
+                            >
+                          </li>
+                          <li>
+                            <a
+                              class="dropdown-item"
+                              href="admin/user/useage-stats/{{ user.user._id }}"
+                              >Usage Stats</a
+                            >
+                          </li>
+                        </ul>
+                        <button type="button" class="btn btn-danger" (click)="deleteUser(user.user._id)">
+                          <i class="fa fa-trash-o" aria-hidden="true"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -71,19 +120,34 @@
       <div class="modal-body">
         <form>
           <div class="mb-3">
-            <label for="recipient-name" class="col-form-label">Assistant Name:</label>
-            <input type="text" class="form-control" id="recipient-name">
+            <label for="assistant-id" class="col-form-label">Id:</label>
+            <input type="text" class="form-control" id="id" [(ngModel)]="selectedId" name="selectedId" readonly disabled>
           </div>
           <div class="mb-3">
-            <label for="recipient-name" class="col-form-label">Assistant Id:</label>
-            <input type="text" class="form-control" id="recipient-name">
+            <label for="assistant-id" class="col-form-label">Assistant Id:</label>
+            <input type="text" class="form-control" id="assistant-id" [(ngModel)]="selectedAssistantId" name="assistantId">
+          </div>
+          <div class="mb-3">
+            <label for="assistant-name" class="col-form-label">Assistant Name:</label>
+            <input type="text" class="form-control" id="assistant-name" [(ngModel)]="selectedAssistantName" name="assistantName">
+          </div>
+          <div class="mb-3">
+            <label for="assistant-id" class="col-form-label">Created At:</label>
+            <input type="text" class="form-control" id="created-at" [value]="selectedCreatedAt | date:'medium'" readonly disabled>
+          </div>
+          <div class="mb-3">
+            <label for="assistant-id" class="col-form-label">Updated At:</label>
+            <input type="text" class="form-control" id="updated-at" [value]="selectedUpdatedAt | date:'medium'" readonly disabled>
           </div>
         </form>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-primary" (click)="saveChanges()" [disabled]="isSaveButtonDisabled()">Save changes</button>
       </div>
     </div>
   </div>
 </div>
+
+
+

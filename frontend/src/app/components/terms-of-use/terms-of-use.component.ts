@@ -4,12 +4,12 @@ import { NgToastService } from 'ng-angular-popup';
 import { AdServiceSettingsService } from '../../services/admin/ad-service-settings/ad-service-settings.service';
 
 @Component({
-  selector: 'app-about-us',
-  templateUrl: './about-us.component.html',
-  styleUrls: ['./about-us.component.css']
+  selector: 'app-terms-of-use',
+  templateUrl: './terms-of-use.component.html',
+  styleUrls: ['./terms-of-use.component.css']
 })
-export class AboutUsComponent implements OnInit {
-  aboutUsContent: string = '';
+export class TermsOfUseComponent implements OnInit {
+  termsOfUseContent: string = '';
 
   constructor(
     private pageSettingsService: AdServiceSettingsService,
@@ -18,23 +18,23 @@ export class AboutUsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.fetchAboutUsContent();
+    this.fetchTermsOfUseContent();
   }
 
-  fetchAboutUsContent(): void {
+  fetchTermsOfUseContent(): void {
     this.spinner.show();
-    this.pageSettingsService.getPageSettings('aboutUs').subscribe(
+    this.pageSettingsService.getPageSettings('termsOfUse').subscribe(
       (response) => {
         this.spinner.hide();
         if (response.isSuccessful && response.result) {
-          this.aboutUsContent = response.result.aboutUs; // Assuming `aboutUs` is part of the response
+          this.termsOfUseContent = response.result.termsOfUse; // Assuming `termsOfUse` is part of the response
         } else {
-          this.aboutUsContent = 'No content available.';
+          this.termsOfUseContent = 'No content available.';
         }
       },
       (error) => {
         this.spinner.hide();
-        this._toast.error({ detail: "ERROR", summary: 'Error fetching About Us content', position: 'br' });
+        this._toast.error({ detail: "ERROR", summary: 'Error fetching Terms of Use content', position: 'br' });
       }
     );
   }

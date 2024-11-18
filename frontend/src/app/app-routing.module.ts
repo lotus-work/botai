@@ -20,6 +20,9 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { IntegrateWebsiteComponent } from './components/integrate-website/integrate-website.component';
 import { AdAuthGuardService } from './services/admin/ad-auth-guard-service/ad-auth-guard.service';
 import { ExportchatComponent } from './components/exportchat/exportchat.component';
+import { AboutUsComponent } from './components/about-us/about-us.component';
+import { TermsOfUseComponent } from './components/terms-of-use/terms-of-use.component';
+import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -31,6 +34,9 @@ const routes: Routes = [
   { path: "dashboard", component: DashboardComponent },
   { path: "integrate-website", component: IntegrateWebsiteComponent },
   { path: "exportchats", component: ExportchatComponent },
+  { path: "aboutus", component: AboutUsComponent },
+  { path: "termsofuse", component: TermsOfUseComponent },
+  { path: "privacypolicy", component: PrivacyPolicyComponent },
 
   { path: "admin/login", component: AdLoginComponent },
   { path: "admin/settings", component: AdSettingsComponent , canActivate:[AdAuthGuardService]},
@@ -39,9 +45,9 @@ const routes: Routes = [
   { path: "admin/page/settings", component: AdPageSettingsComponent , canActivate:[AdAuthGuardService]},
   { path: "admin/support-tickets", component: AdSupportTicketsComponent , canActivate:[AdAuthGuardService]},
   { path: "admin/user/add", component: AdAddUserComponent , canActivate:[AdAuthGuardService]},
-  { path: "admin/user/edit", component: AdEditUserComponent , canActivate:[AdAuthGuardService]},
+  { path: "admin/user/edit/:id", component: AdEditUserComponent , canActivate:[AdAuthGuardService]},
   { path: "admin/user/customkb", component: AdUserCustomKbComponent , canActivate:[AdAuthGuardService]},
-  { path: "admin/user/useage-stats", component: AdUserUsageStatsComponent , canActivate:[AdAuthGuardService]}
+  { path: "admin/user/useage-stats/:id", component: AdUserUsageStatsComponent , canActivate:[AdAuthGuardService]}
 ];
 
 @NgModule({

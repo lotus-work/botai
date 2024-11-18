@@ -4,12 +4,12 @@ import { NgToastService } from 'ng-angular-popup';
 import { AdServiceSettingsService } from '../../services/admin/ad-service-settings/ad-service-settings.service';
 
 @Component({
-  selector: 'app-about-us',
-  templateUrl: './about-us.component.html',
-  styleUrls: ['./about-us.component.css']
+  selector: 'app-privacy-policy',
+  templateUrl: './privacy-policy.component.html',
+  styleUrls: ['./privacy-policy.component.css']
 })
-export class AboutUsComponent implements OnInit {
-  aboutUsContent: string = '';
+export class PrivacyPolicyComponent implements OnInit {
+  privacyPolicyContent: string = '';
 
   constructor(
     private pageSettingsService: AdServiceSettingsService,
@@ -18,23 +18,23 @@ export class AboutUsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.fetchAboutUsContent();
+    this.fetchPrivacyPolicyContent();
   }
 
-  fetchAboutUsContent(): void {
+  fetchPrivacyPolicyContent(): void {
     this.spinner.show();
-    this.pageSettingsService.getPageSettings('aboutUs').subscribe(
+    this.pageSettingsService.getPageSettings('privacyPolicy').subscribe(
       (response) => {
         this.spinner.hide();
         if (response.isSuccessful && response.result) {
-          this.aboutUsContent = response.result.aboutUs; // Assuming `aboutUs` is part of the response
+          this.privacyPolicyContent = response.result.privacyPolicy; // Assuming `privacyPolicy` is part of the response
         } else {
-          this.aboutUsContent = 'No content available.';
+          this.privacyPolicyContent = 'No content available.';
         }
       },
       (error) => {
         this.spinner.hide();
-        this._toast.error({ detail: "ERROR", summary: 'Error fetching About Us content', position: 'br' });
+        this._toast.error({ detail: "ERROR", summary: 'Error fetching Privacy Policy content', position: 'br' });
       }
     );
   }

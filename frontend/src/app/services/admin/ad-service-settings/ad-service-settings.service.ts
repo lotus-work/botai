@@ -15,6 +15,22 @@ export class AdServiceSettingsService {
       .pipe(catchError(this.errorHandler));
   }
 
+  getPageSettings(page: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/page-settings?page=${page}`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  getSettings(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/settings`).pipe(
+      catchError(this.errorHandler)
+    );
+  }
+
+  updateSettings(settingsData: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/settings`, settingsData).pipe(
+      catchError(this.errorHandler)
+    );
+  }
 
   private errorHandler(error: HttpErrorResponse) {
     console.error('Error occurred:', error);

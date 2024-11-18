@@ -1,14 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const Users = require('../models/user'); 
+const Users = require('../models/user');
 const { Organizations } = require('../models/organization');
 const ApiResponse = require('../utils/apiResponse');
 const mongoose = require('mongoose');
 const { OrganizationMembers } = require('../models/organizationMember');
 const EmailService = require('../utils/emailService');
 const { encrypt, decrypt } = require('../utils/encryptionUtility');
-const Conversation = require("../models/conversation"); 
-const Message = require("../models/message"); 
+const Conversation = require("../models/conversation");
+const Message = require("../models/message");
+const { GptAssistants } = require('../models/gptAssistant');
+
 router.post('/add', async (req, res) => {
     const { name, phoneNumber, emailAddress } = req.body;
 
@@ -47,14 +49,45 @@ router.get('/get/:id', async (req, res) => {
         const user = await Users.findById(userId);
 
         if (!user) {
-            ApiResponse.sendResponse(res, 404, false, { message: 'User not found' });
-        } else {
-            ApiResponse.sendResponse(res, 200, true, user);
+            return res.status(404).json({
+                status: 404,
+                isSuccessful: false,
+                result: { message: 'User not found' },
+            });
         }
+
+        // Fetch related data with fallbacks for null/undefined cases
+        const gptAssistant = (await GptAssistants.findOne({ userId: user._id })) || {}; // Default to empty object
+        const organization = (await Organizations.findOne({ userId: user._id })) || {}; // Default to empty object
+        const organizationMembers = (organization._id 
+            ? await OrganizationMembers.find({ organizationId: organization._id }) 
+            : []); // Default to empty array if no organization is found
+
+        // Construct the response using the spread operator
+        const result = {
+            ...user.toObject(), // Spread all fields of the `user` object
+            gptAssistant, // Include related GptAssistant
+            organization, // Include related Organization
+            organizationMembers, // Include related OrganizationMembers
+        };
+
+        // Send the response
+        res.status(200).json({
+            status: 200,
+            isSuccessful: true,
+            result, // Send the final combined result
+        });
     } catch (err) {
-        ApiResponse.sendResponse(res, 500, false, { message: 'Error fetching user by ID', error: err.message });
+        console.error('Error fetching user details:', err);
+        res.status(500).json({
+            status: 500,
+            isSuccessful: false,
+            result: { message: 'Error fetching user details: ' + err.message },
+        });
     }
 });
+
+
 
 router.put('/update/:id', async (req, res) => {
     const userId = req.params.id;
@@ -221,7 +254,6 @@ router.get('/organization/members/update/status/:encryptedUserId/:encryptedOrgan
     }
 });
 
-
 router.get('/organization/check/:userid', async (req, res) => {
     const { userid } = req.params;
 
@@ -239,7 +271,7 @@ router.get('/organization/check/:userid', async (req, res) => {
 
         // Assuming we take the first organization found
         const firstOrganization = organizations[0];
-        
+
         // Now, find the members of the organization
         const organizationMembers = await OrganizationMembers.find({ organizationId: firstOrganization._id }); // Adjust field to match your schema
 
@@ -254,47 +286,43 @@ router.get('/organization/check/:userid', async (req, res) => {
     }
 });
 
-router.delete('/organization/:organizationId/member/:userId', async (req, res) => {
-    const { organizationId, userId } = req.params;
 
-    const session = await mongoose.startSession();
-    session.startTransaction();
+router.delete('/remove-user-from-org/:userId', async (req, res) => {
+    const { userId } = req.params;
 
     try {
-        const organization = await Organizations.findById(organizationId);
-        if (!organization) {
-            return ApiResponse.sendResponse(res, 404, false, 'Organization not found');
+        // Check if the user exists in the OrganizationMembers collection
+        const organizationMember = await OrganizationMembers.findOne({ userId });
+
+        if (!organizationMember) {
+            return res.status(404).json({
+                status: 404,
+                isSuccessful: false,
+                result: { message: 'User is not a member of any organization.' }
+            });
         }
 
-        const memberRecord = await OrganizationMembers.findOne({ organizationId, userId });
-        if (!memberRecord) {
-            return ApiResponse.sendResponse(res, 404, false, 'User is not a member of this organization');
-        }
+        // Remove the user from the OrganizationMembers collection
+        await OrganizationMembers.deleteOne({ userId });
 
-        const memberDelete = await OrganizationMembers.deleteOne({ organizationId, userId }, { session });
-        const userDelete = await Users.deleteOne({ _id: userId }, { session });
-        const conversationsDelete = await Conversation.deleteMany({ userId: userId }, { session });
-        const messagesDelete = await Message.deleteMany({ userId: userId }, { session });
+        // Remove associated messages
+        await Message.deleteMany({ userId });
 
-        await session.commitTransaction();
-        session.endSession();
+        // Remove associated conversations
+        await Conversation.deleteMany({ userId });
 
-        return ApiResponse.sendResponse(res, 200, true, {
-            message: 'User and associated records deleted successfully',
-            details: {
-                memberDelete,
-                userDelete,
-                conversationsDelete,
-                messagesDelete
-            }
+        // Send a success response
+        return res.status(200).json({
+            status: 200,
+            isSuccessful: true,
+            result: { message: 'User successfully removed from OrganizationMembers and associated data deleted.' }
         });
-    } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
-
-        return ApiResponse.sendResponse(res, 500, false, {
-            message: 'Error occurred while deleting user and associated records',
-            error: error.message
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            status: 500,
+            isSuccessful: false,
+            result: { message: 'Error removing user from organization: ' + err.message }
         });
     }
 });
