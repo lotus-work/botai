@@ -27,7 +27,7 @@ export class LoginComponent {
   }
 
   fetchAndStoreBasicInfo() {
-    this.adSettingsService.getBasicInfo('yourPage').subscribe(
+    this.adSettingsService.getBasicInfo().subscribe(
       (data) => {
         this.basicinfo = data;
         localStorage.setItem('basicInfo', JSON.stringify(data));

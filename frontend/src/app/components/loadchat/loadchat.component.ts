@@ -29,6 +29,7 @@ export class LoadchatComponent {
   user: any;
   userMessage: string = '';
   conversationId: string = '';
+  threadId: string = '';
   showFirstRow: boolean = false;
   public safeHtml: SafeHtml = '';
 
@@ -73,7 +74,9 @@ export class LoadchatComponent {
   loadChatHistory(conversationId: string, userId: string) {
     this._apiCallServices.getConversation(conversationId, userId).subscribe(data => {
       this.chatMessages = data.messages; 
-      console.log(data.messages);
+      console.log(data);
+      this.threadId = data.result.conversation.threadId;
+      console.log(this.threadId);
     });
   }
 
@@ -102,30 +105,29 @@ export class LoadchatComponent {
     this.chatMessages.push({ role: 'bot', content: '<img src="https://cdn.pixabay.com/animation/2024/04/02/07/57/07-57-40-974_512.gif" width="60px;"></img>' });
     this.isTextareaDisabled = true;
 
-    this._apiCallServices.getResponseFromChatbot(this.user._id, userMessage, this.temperature, this.user.isOwner).subscribe(async res => {
-      if (res.status === "success") {
-        this.chatMessages.pop();
-        this.playFile();
-        
-        // Format and sanitize response
-        const formattedResponse = await this.formatMarkdown(res.response.content);
-        const sanitizedContent = this.sanitizer.bypassSecurityTrustHtml(formattedResponse);
-        
-        // Push the sanitized content to chatMessages
-        this.chatMessages.push({ role: 'bot', content: sanitizedContent });
-        
-        this.isTextareaDisabled = false;
-        
-        const conversationName = this.getWordsUpToFiveSpaces(userMessage);
-        // Add message to new conversation
-        this._apiCallServices.addConversation(this.user._id, this.user.gptAssistant.assistantId, conversationName, userMessage, formattedResponse).subscribe(addRes => {
-          if (addRes.success == true) {
-            this.conversationId = addRes.conversationId;
+    const conversationName = this.getWordsUpToFiveSpaces(userMessage);
+    this._apiCallServices.addConversation(this.user._id, this.user.gptAssistant.assistantId, conversationName).subscribe(addRes => {
+      if (addRes.success == true) {
+        this.conversationId = addRes.conversationId;
+
+        this._apiCallServices.getResponseFromChatbot(this.user._id, userMessage, this.temperature, this.user.isOwner, addRes.threadId, this.conversationId).subscribe(async res => {
+          if (res.status === "success") {
+            this.chatMessages.pop();
+            this.playFile();
+            
+            // Format and sanitize response
+            const formattedResponse = await this.formatMarkdown(res.response.content);
+            const sanitizedContent = this.sanitizer.bypassSecurityTrustHtml(formattedResponse);
+            
+            // Push the sanitized content to chatMessages
+            this.chatMessages.push({ role: 'bot', content: sanitizedContent });
+            
+            this.isTextareaDisabled = false;
+            
           }
         });
       }
     });
-    
   }
   getWordsUpToFiveSpaces(text: string): string {
     let spaceCount = 0;
@@ -152,7 +154,7 @@ export class LoadchatComponent {
     this.chatMessages.push({ role: 'bot', content: '<img src="https://cdn.pixabay.com/animation/2024/04/02/07/57/07-57-40-974_512.gif" width="60px;"></img>' });
     this.isTextareaDisabled = true;
 
-    this._apiCallServices.getResponseFromChatbot(this.user._id, userMessage, this.temperature, this.user.isOwner).subscribe(async res => {
+    this._apiCallServices.getResponseFromChatbot(this.user._id, userMessage, this.temperature, this.user.isOwner, this.threadId, this.conversationId).subscribe(async res => {
       if (res.status === "success") {
         this.chatMessages.pop();
         this.playFile();
@@ -166,10 +168,6 @@ export class LoadchatComponent {
         
         this.isTextareaDisabled = false;
         
-        // Add message to existing conversation
-        if (this.conversationId) {
-          this._apiCallServices.addMessageToConversation(this.conversationId, this.user._id, userMessage, formattedResponse).subscribe();
-        }
       }
       console.log(this.chatMessages);
     });

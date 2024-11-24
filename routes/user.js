@@ -54,27 +54,14 @@ router.post('/add', async (req, res) => {
                 ApiResponse.sendResponse(res, 200, true, { message: 'User logged in successfully', user , gptAssistant});
             }
         } else {
-            // Create a new user
-            user = new Users({
-                appName,
-                appLogo,
-                name,
-                phoneNumber,
-                emailAddress,
-                isOwner: true,
-                role: 'User',
-                isActive: true
+            ApiResponse.sendResponse(res, 200, false, {
+                message: 'You have to be added or invited by the admin.'
             });
-            await user.save();
-
-            ApiResponse.sendResponse(res, 201, true, { message: 'User created and logged in successfully', user });
         }
     } catch (err) {
         ApiResponse.sendResponse(res, 500, false, { message: 'Error during add/login operation', error: err.message });
     }
 });
-;
-
 
 router.get('/get/:id', async (req, res) => {
     const userId = req.params.id;

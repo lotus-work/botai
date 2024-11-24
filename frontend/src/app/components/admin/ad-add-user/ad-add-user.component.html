@@ -45,7 +45,8 @@
             <input type="text" class="form-control" id="assistantId" name="assistantId" [(ngModel)]="userData.assistantId" required />
           </div>
 
-          <button type="submit" class="btn btn-primary">Add</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!isFormValid()">Add</button>
+
         </form>
       </div>
     </div>

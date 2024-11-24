@@ -32,4 +32,8 @@ export class AdAddUserComponent {
       }
     );
   }
+  isFormValid(): boolean {
+    // Check if all fields in userData have non-empty values
+    return Object.values(this.userData).every(field => field.trim() !== '');
+  }
 }

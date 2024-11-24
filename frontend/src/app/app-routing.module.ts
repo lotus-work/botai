@@ -23,6 +23,7 @@ import { ExportchatComponent } from './components/exportchat/exportchat.componen
 import { AboutUsComponent } from './components/about-us/about-us.component';
 import { TermsOfUseComponent } from './components/terms-of-use/terms-of-use.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
+import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -37,6 +38,7 @@ const routes: Routes = [
   { path: "aboutus", component: AboutUsComponent },
   { path: "termsofuse", component: TermsOfUseComponent },
   { path: "privacypolicy", component: PrivacyPolicyComponent },
+  { path: "unauthorized", component: UnauthorizedComponent },
 
   { path: "admin/login", component: AdLoginComponent },
   { path: "admin/settings", component: AdSettingsComponent , canActivate:[AdAuthGuardService]},

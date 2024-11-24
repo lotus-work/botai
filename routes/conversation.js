@@ -21,11 +21,10 @@ const OpenAI = require('openai');
 // POST /conversations - Create a new conversation or add a message to an existing one
 router.post("/add", async (req, res) => {
   try {
-    const { conversationId, userId, assistantId, conversationName, message } =
+    const { conversationId, userId, assistantId, conversationName } =
       req.body;
 
     let conversation;
-    let pollingInterval;
 
     const settings = await Settings.findOne();
     if (!settings || !settings.chatGPT) {
@@ -57,23 +56,11 @@ router.post("/add", async (req, res) => {
       await conversation.save();
     }
 
-    // Step 2: Add a new message to the conversation
-    const newMessage = new Message({
-      conversationId: conversation._id,
-      userId,
-      senderType: "user",
-      userPrompt: message.userPrompt,
-      botReply: message.botReply,
-      createdAt: new Date(),
-    });
-    await newMessage.save();
-    conversation.updatedAt = new Date();
-    await conversation.save();
-
     return res.status(201).json({
       success: true,
       message: "Message added successfully",
       conversationId: conversation._id,
+      threadId : thread.id
     });
   } catch (error) {
     console.error("Error handling conversation:", error);
@@ -160,9 +147,113 @@ router.get("/user/:userId", async (req, res) => {
 });
 
 
+async function addMessage(openai, threadId, assistantId, message) {
+  console.log('Adding a new message to thread: ' + threadId);
+
+  // Send the message to OpenAI thread
+  const response = await openai.beta.threads.messages.create(
+    threadId,
+    {
+      role: "user",
+      content: message
+    }
+  );
+  
+  return response; // Returning the message response
+}
+
+async function runAssistant(openai, threadId, assistantId) {
+  console.log('Running assistant for thread: ' + threadId);
+
+  // Start the assistant run for the thread
+  const response = await openai.beta.threads.runs.create(
+    threadId,
+    { 
+      assistant_id: assistantId
+      // You can add more parameters if needed (like instruction override)
+    }
+  );
+
+  return response; // Return the run response
+}
+
+async function checkingStatus(openai, res, threadId, runId, pollingInterval, message , conversationId, userId) {
+  try {
+    // Retrieve the run object to check its status
+    const runObject = await openai.beta.threads.runs.retrieve(threadId, runId);
+    const status = runObject.status;
+
+    console.log('Current status: ' + status);
+
+    if (status === 'completed') {
+      clearInterval(pollingInterval); // Stop polling after completion
+
+      const messagesList = await openai.beta.threads.messages.list(threadId);
+    let messages = [];
+
+    messagesList.body.data.forEach(message => {
+      messages.push(message.content);
+    });
+
+      for (const messageArray of messages) {
+        for (const message of messageArray) {
+          if (message.type === "text" && message.text?.value) {
+            firstMessageValue = message.text.value;
+            break;
+          }
+        }
+        if (firstMessageValue) break; // Exit outer loop if a value is found
+      }
+
+      if (!firstMessageValue) {
+        throw new Error('No valid message text found.');
+      }
+
+    const newMessage = new Message({
+      conversationId: conversationId,
+      userId,
+      senderType: "user",
+      userPrompt: message,
+      botReply: firstMessageValue,
+      createdAt: new Date(),
+    });
+    await newMessage.save();
+
+    const conversation = await Conversation.findOne({
+      _id: conversationId,
+    });
+    conversation.updatedAt = new Date();
+    await conversation.save();
+
+      // Respond with the desired format
+      res.json({
+        response: {
+          role: "assistant",
+          content: firstMessageValue,
+          refusal: null,
+        },
+        status: "success",
+      });
+
+      console.log({
+        response: {
+          role: "assistant",
+          content: firstMessageValue,
+          refusal: null,
+        },
+        status: "success",
+      });
+    }
+  } catch (error) {
+    console.error('Error while checking status:', error.message);
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+}
+
+
 router.post('/chat', async (req, res) => {
   try {
-    const { userId, message, temperature = 0.7, isOwner, threadId } = req.body;
+    const { userId, message, temperature = 0.7, isOwner, threadId, conversationId } = req.body;
 
     if (!userId || !message) {
       return res.status(400).json({ status: 'error', message: 'User ID and message are required.' });
@@ -170,6 +261,7 @@ router.post('/chat', async (req, res) => {
 
     let assistantUserId = userId;
 
+    let pollingInterval;
     // If the user is not an owner, find the owner's userId via organization data
     if (!isOwner) {
       const memberData = await OrganizationMembers.findOne({ userId });
@@ -177,7 +269,7 @@ router.post('/chat', async (req, res) => {
         return res.status(404).json({ status: 'error', message: 'Organization not found for the user.' });
       }
 
-      const organizationData = await Organizations.findOne({ organizationId: memberData.organizationId });
+      const organizationData = await Organizations.findOne({ _id: memberData.organizationId });
       if (!organizationData || !organizationData.userId) {
         return res.status(404).json({ status: 'error', message: 'Owner not found for the organization.' });
       }
@@ -197,33 +289,25 @@ router.post('/chat', async (req, res) => {
     if (!settings || !settings.chatGPT) {
       return res.status(500).json({ status: 'error', message: 'ChatGPT settings are not configured.' });
     }
+    const openai = new OpenAI({
+      apiKey: settings.chatGPT.apiKey,
+  });
 
-    const { masterInstruction, apiKey, modelName, url } = settings.chatGPT;
+    // Send message and then run the assistant
+    addMessage(openai, threadId,assistantId, message).then(messageResponse => {
+      // You could use messageResponse to access additional details if needed
+      console.log('Message added successfully', messageResponse);
 
-    console.log(assistantId + " " + masterInstruction);
+      // Run the assistant after adding the message
+      runAssistant(openai, threadId, assistantId).then(runResponse => {
+        const runId = runResponse.id;
 
-    // Prepare OpenAI request parameters
-    const params = {
-      model: modelName || "gpt-3.5-turbo",
-      messages: [
-        { role: "system", content: masterInstruction },
-        { role: "user", content: message },
-      ],
-      user: assistantId,
-      temperature,
-    };
-
-    // Send request to OpenAI
-    const response = await axios.post(url, params, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
+        // Polling the assistant status
+         pollingInterval = setInterval(() => {
+          checkingStatus(openai, res, threadId, runId, pollingInterval, message, conversationId, userId);
+        }, 5000); // Check the status every 5 seconds
+      });
     });
-
-    // Respond with OpenAI reply response.data.choices[0].message
-    const reply = response.data.choices[0]?.message || "No response generated.";
-    res.json({ response: reply, status: "success" });
 
   } catch (error) {
     console.error('Error processing the request:', error.message);
