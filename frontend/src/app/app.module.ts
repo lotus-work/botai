@@ -40,6 +40,7 @@ import { ExportchatComponent } from './components/exportchat/exportchat.componen
 import { TermsOfUseComponent } from './components/terms-of-use/terms-of-use.component';
 import { PrivacyPolicyComponent } from './components/privacy-policy/privacy-policy.component';
 import { MisNavbarComponent } from './components/mis-navbar/mis-navbar.component';
+import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
 
 @NgModule({
   declarations: [
@@ -72,6 +73,7 @@ import { MisNavbarComponent } from './components/mis-navbar/mis-navbar.component
     TermsOfUseComponent,
     PrivacyPolicyComponent,
     MisNavbarComponent,
+    UnauthorizedComponent,
   ],
   imports: [
     NgToastModule,

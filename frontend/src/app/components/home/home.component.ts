@@ -59,7 +59,7 @@ export class HomeComponent {
                       this.getAllChats(response.result.user._id);
                     window.location.reload();
                   } else {
-                    console.error('User addition failed:', response);
+                    this.router.navigate(['unauthorized']);
                   }
                 },
                 error: (err) => {

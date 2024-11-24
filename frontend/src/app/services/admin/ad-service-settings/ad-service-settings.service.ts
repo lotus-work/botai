@@ -20,7 +20,7 @@ export class AdServiceSettingsService {
       .pipe(catchError(this.errorHandler));
   }
 
-  getBasicInfo(page: string): Observable<any> {
+  getBasicInfo(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/basicinfo`)
       .pipe(catchError(this.errorHandler));
   }

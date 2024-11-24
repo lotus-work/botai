@@ -14,12 +14,14 @@ rootURL3 = "https://api.michaelthehomebuyer.ca/"
  private apiUrl = `https://botai-7k46.onrender.com/conversation/`;
   dialogflowAPI = "https://api.michaelthehomebuyer.ca/"
   
-  getResponseFromChatbot(userId: string, message: string, temperature: number, isOwner: boolean): Observable<any> {
+  getResponseFromChatbot(userId: string, message: string, temperature: number, isOwner: boolean, threadId: string, conversationId: string): Observable<any> {
     return this.http.post<any>(this.apiUrl + "chat", {
       userId : userId,
       message: message,
       temperature: temperature,
-      isOwner : isOwner
+      isOwner : isOwner,
+      threadId : threadId,
+      conversationId : conversationId
     }).pipe(catchError(this.errorHandler));
   }
 
@@ -29,27 +31,20 @@ rootURL3 = "https://api.michaelthehomebuyer.ca/"
   }
 
    // Method 1: Add New Conversation with Initial Message
-   addConversation(userId: string, assistantId: string, conversationName: string, userPrompt: string, botReply: string): Observable<any> {
+   addConversation(userId: string, assistantId: string, conversationName: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}add`, {
       userId,
       assistantId,
-      conversationName,
-      message: {
-        userPrompt,
-        botReply
-      }
+      conversationName
     }).pipe(catchError(this.errorHandler));
   }
 
   // Method 2: Add Message to Existing Conversation
-  addMessageToConversation(conversationId: string, userId: string, userPrompt: string, botReply: string): Observable<any> {
+  addMessageToConversation(conversationId: string, userId: string, assistantId: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}add`, {
       conversationId,
       userId,
-      message: {
-        userPrompt,
-        botReply
-      }
+      assistantId
     }).pipe(catchError(this.errorHandler));
   }
 
