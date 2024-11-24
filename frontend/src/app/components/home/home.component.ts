@@ -28,6 +28,7 @@ export class HomeComponent {
     
 
   ngOnInit() {
+    this.spinner.show();
     this.auth.isAuthenticated$.subscribe((isAuthenticated) => {
       if (!isAuthenticated && !this.checkAuthKeysExist()) {
         this.router.navigate(['login']);
@@ -81,6 +82,11 @@ export class HomeComponent {
       this.user = JSON.parse(localStorageUser);
       console.log(this.user);
     }
+
+    setTimeout(() => {
+      this.spinner.hide();
+    }, 1000);
+
   }
 
 
