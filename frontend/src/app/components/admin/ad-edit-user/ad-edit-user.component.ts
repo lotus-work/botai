@@ -12,6 +12,8 @@ export class AdEditUserComponent implements OnInit {
   userInfo : any = [];
   userId: string = '';
   userData = {
+    appName : '',
+    appLogo : '',
     name: '',
     phoneNumber: '',
     emailAddress: '',
@@ -49,6 +51,8 @@ export class AdEditUserComponent implements OnInit {
     this.adUserService.getUserDetails(this.userId).subscribe(
       (response: any) => {
         this.userInfo = response.result;
+        this.userData.appName = response.result.appName || '',
+        this.userData.appLogo = response.result.appLogo || '',
         this.userData.name = response.result.name || '';
         this.userData.phoneNumber = response.result.phoneNumber || '';
         this.userData.emailAddress = response.result.emailAddress || '';

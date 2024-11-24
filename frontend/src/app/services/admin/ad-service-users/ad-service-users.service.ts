@@ -59,6 +59,35 @@ export class AdServiceUsersService {
         catchError(this.errorHandler)
       );
   }
+  getUserMessageStats(userId: string, startDate?: string, endDate?: string) {
+    const params: any = { userId };
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+  
+    return this.http
+      .get(`${this.apiUrl}/user/message-stats`, { params })
+      .pipe(catchError(this.errorHandler));
+  }
+  
+  getOrganizationMessageStats(organizationId: string, startDate?: string, endDate?: string) {
+    const params: any = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+  
+    return this.http
+      .get(`${this.apiUrl}/organization/message-stats/${organizationId}`, { params })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  getAllUserStats(startDate?: string, endDate?: string) {
+    const params: any = { };
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+  
+    return this.http
+      .get(`${this.apiUrl}/allUser/stats`, { params })
+      .pipe(catchError(this.errorHandler));
+  }
   
   private errorHandler(error: HttpErrorResponse) {
     console.error('Error occurred:', error);

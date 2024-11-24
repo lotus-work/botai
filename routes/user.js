@@ -12,15 +12,52 @@ const Message = require("../models/message");
 const { GptAssistants } = require('../models/gptAssistant');
 
 router.post('/add', async (req, res) => {
-    const { name, phoneNumber, emailAddress } = req.body;
+    const { appName, appLogo, name, phoneNumber, emailAddress } = req.body;
 
     try {
         let user = await Users.findOne({ emailAddress });
-
+        let gptAssistant;
         if (user) {
-            ApiResponse.sendResponse(res, 200, true, { message: 'User logged in successfully', user });
+            // Check if the user is the owner or not
+            if (user.isOwner) {
+                // Check if the user has an organization
+                const organization = await Organizations.findOne({ userId: user._id });
+                const gptAssistant = await GptAssistants.findOne({ userId: user._id });
+                let response = { message: 'User logged in successfully', user };
+
+                if (organization && gptAssistant) {
+                    // Append organization details to the response
+                    response.organization = organization;
+                    response.gptAssistant = gptAssistant;
+                }
+
+                ApiResponse.sendResponse(res, 200, true, response);
+            } else {
+                // If the user is not an owner, find the organizationId the user belongs to
+                const orgMember = await OrganizationMembers.findOne({ userId: user._id });
+
+                if (orgMember) {
+                    const organization = await Organizations.findOne({ _id: orgMember.organizationId });
+                    if (organization) {
+                        // Find the user (not owner) in the organization and get their appName and appLogo
+                        const orgUser = await Users.findOne({ _id: organization.userId });
+                        const gptAssistantOfUser = await GptAssistants.findOne({ userId: organization.userId });
+                        if (orgUser && gptAssistantOfUser) {
+                            // Append appName and appLogo from the organization user to the current user record
+                            user.appName = orgUser.appName;
+                            user.appLogo = orgUser.appLogo;
+                            gptAssistant = gptAssistantOfUser;
+                        }
+                    }
+                }
+
+                ApiResponse.sendResponse(res, 200, true, { message: 'User logged in successfully', user , gptAssistant});
+            }
         } else {
+            // Create a new user
             user = new Users({
+                appName,
+                appLogo,
                 name,
                 phoneNumber,
                 emailAddress,
@@ -36,6 +73,8 @@ router.post('/add', async (req, res) => {
         ApiResponse.sendResponse(res, 500, false, { message: 'Error during add/login operation', error: err.message });
     }
 });
+;
+
 
 router.get('/get/:id', async (req, res) => {
     const userId = req.params.id;
@@ -91,7 +130,7 @@ router.get('/get/:id', async (req, res) => {
 
 router.put('/update/:id', async (req, res) => {
     const userId = req.params.id;
-    const { name, phoneNumber, address } = req.body;
+    const { appName, appLogo, name, phoneNumber, address } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(userId)) {
         return ApiResponse.sendResponse(res, 400, false, { message: 'Invalid user ID format' });
@@ -100,7 +139,7 @@ router.put('/update/:id', async (req, res) => {
     try {
         const updatedUser = await Users.findByIdAndUpdate(
             userId,
-            { name, phoneNumber, address },
+            { appName, appLogo, name, phoneNumber, address },
             { new: true },
         );
 

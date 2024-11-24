@@ -61,6 +61,7 @@ export class AdSettingsComponent implements OnInit {
   }
 
   onSubmit(): void {
+    console.log(this.settings);
     this.spinner.show();
     this.settingsService.updateSettings(this.settings).subscribe(
       (response) => {

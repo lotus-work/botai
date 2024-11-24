@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
+    appLogo: { type: String, required: false },
+    appName: { type: String, required: false },
     name: { type: String, required: true },
     phoneNumber: { type: String, required: false },
     address: { type: String, required: false },

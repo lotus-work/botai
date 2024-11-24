@@ -24,9 +24,11 @@ export class BotComponent implements OnInit {
     "https://s3-us-west-2.amazonaws.com/s.cdpn.io/3/success.mp3"
   );
   user: any;
+  basicinfo: any = [];
   userMessage: string = '';
   conversationId: string = '';
   showFirstRow: boolean = true;
+  temperature = 0.7;
   public safeHtml: SafeHtml = '';
 
   public date = "<p>Of course! Here are some key points to help you get started with learning C#:</p> <ol> <li><p><strong>Introduction to C#:</strong></p> <ul> <li>C# is a modern, versatile programming language developed by Microsoft.</li> <li>It is used for developing various types of applications, including desktop, web, mobile, and more.</li> </ul> </li> <li><p><strong>Basic Syntax:</strong></p> <ul> <li>C# is case-sensitive and uses curly braces {} to define code blocks.</li> <li>Statements end with a semicolon (;).</li> </ul> </li> <li><p><strong>Variables and Data Types:</strong></p> <ul> <li>Variables are used to store data in C#. They must be declared with a specific data type.</li> <li>Common data types include int (integer), string (text), double (decimal number), bool (boolean), etc.</li> </ul> </li> <li><p><strong>Control Structures:</strong></p> <ul> <li>C# includes control structures like if-else statements, loops (for, while, do-while), and switch-case for decision-making and iterating through code.</li> </ul> </li> <li><p><strong>Functions and Methods:</strong></p> <ul> <li>Functions in C# are blocks of code that perform a specific task.</li> <li>Methods are functions that are associated with a class or object.</li> </ul> </li> <li><p><strong>Classes and Objects:</strong></p> <ul> <li>C# is an object-oriented programming language, where classes are used to define objects.</li> <li>Objects are instances of classes that contain data (attributes) and methods (functions).</li> </ul> </li> <li><p><strong>Inheritance and Polymorphism:</strong></p> <ul> <li>Inheritance allows a class to inherit properties and behavior from another class.</li> <li>Polymorphism enables objects to be treated as instances of their parent class.</li> </ul> </li> <li><p><strong>Exception Handling:</strong></p> <ul> <li>C# provides mechanisms to handle exceptions that may occur during program execution using try-catch blocks.</li> </ul> </li> <li><p><strong>.NET Framework:</strong></p> <ul> <li>C# is commonly used with the .NET Framework, a software development platform for building Windows applications.</li> </ul> </li> <li><p><strong>Practice and Resources:</strong></p> <ul> <li>Practice coding regularly to improve your skills.</li> <li>Online tutorials, courses, and documentation can further enhance your understanding of C#.</li> </ul> </li> </ol> <p>I hope these points help you start your journey with C#! Is there anything specific you would like to learn more about?</p>";
@@ -36,8 +38,10 @@ export class BotComponent implements OnInit {
   ngOnInit() {
     try {
       const localStorageUser = localStorage.getItem('user');
-      if (localStorageUser) {
+      const basicDetails = localStorage.getItem('basicInfo');
+      if (localStorageUser && basicDetails) {
         this.user = JSON.parse(localStorageUser);
+        this.basicinfo = JSON.parse(basicDetails);
       }
     } catch (error) {
       this._toast.error({ detail: "ERROR", summary: 'An error occurred while loading user data', position: 'br' });
@@ -81,7 +85,7 @@ export class BotComponent implements OnInit {
     this.chatMessages.push({ role: 'bot', content: '<img src="https://cdn.pixabay.com/animation/2024/04/02/07/57/07-57-40-974_512.gif" width="60px;"></img>' });
     this.isTextareaDisabled = true;
 
-    this._apiCallServices.getResponseFromChatbot(userMessage).subscribe(async res => {
+    this._apiCallServices.getResponseFromChatbot(this.user._id, userMessage, this.temperature, this.user.isOwner).subscribe(async res => {
       if (res.status === "success") {
         this.chatMessages.pop();
         this.playFile();
@@ -97,7 +101,7 @@ export class BotComponent implements OnInit {
         
         const conversationName = this.getWordsUpToFiveSpaces(userMessage);
         // Add message to new conversation
-        this._apiCallServices.addConversation(this.user._id, '672326987f64f5a5569de617', conversationName, userMessage, formattedResponse).subscribe(addRes => {
+        this._apiCallServices.addConversation(this.user._id, this.user.gptAssistant.assistantId, conversationName, userMessage, formattedResponse).subscribe(addRes => {
           if (addRes.success == true) {
             this.conversationId = addRes.conversationId;
           }
@@ -131,7 +135,7 @@ export class BotComponent implements OnInit {
     this.chatMessages.push({ role: 'bot', content: '<img src="https://cdn.pixabay.com/animation/2024/04/02/07/57/07-57-40-974_512.gif" width="60px;"></img>' });
     this.isTextareaDisabled = true;
 
-    this._apiCallServices.getResponseFromChatbot(userMessage).subscribe(async res => {
+    this._apiCallServices.getResponseFromChatbot(this.user._id, userMessage, this.temperature, this.user.isOwner).subscribe(async res => {
       if (res.status === "success") {
         this.chatMessages.pop();
         this.playFile();

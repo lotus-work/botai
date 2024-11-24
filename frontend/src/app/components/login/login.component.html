@@ -4,7 +4,13 @@
       <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12 order-lg-1 order-2 d-flex justify-content-center">
         <div class="text-center overlay-text">
           <div class="mt-5">
-            <h1>WELCOME BACK</h1>
+            <ng-container *ngIf="basicinfo; else noData">
+              <h1>{{ basicinfo.homePageTitle }}</h1>
+            </ng-container>
+            
+            <ng-template #noData>
+              <h1>WELCOME</h1>
+            </ng-template>
           </div>
           <div class="mt-4">
             <!-- Button for login or show logging in state -->

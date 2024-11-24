@@ -17,8 +17,8 @@ export class LoadchatComponent {
   @Input() selectedUserId: string = '';
   @ViewChild('scrollContainer', { static: false }) private scrollContainer!: ElementRef;
 
-
-  
+  temperature = 0.7;
+  basicinfo: any = [];
   convertedMarkdown: SafeHtml | undefined; 
 
   chatMessages: { role: string, content: SafeHtml }[] = [];
@@ -44,6 +44,10 @@ export class LoadchatComponent {
     }
   }
   ngOnInit() {
+    const basicDetails = localStorage.getItem('basicInfo');
+    if(basicDetails){
+      this.basicinfo = JSON.parse(basicDetails);
+    }
     if (this.selectedConversationId && this.selectedUserId) {
       console.log("clicked");
       this.loadChatHistory(this.selectedConversationId, this.selectedUserId);
@@ -98,7 +102,7 @@ export class LoadchatComponent {
     this.chatMessages.push({ role: 'bot', content: '<img src="https://cdn.pixabay.com/animation/2024/04/02/07/57/07-57-40-974_512.gif" width="60px;"></img>' });
     this.isTextareaDisabled = true;
 
-    this._apiCallServices.getResponseFromChatbot(userMessage).subscribe(async res => {
+    this._apiCallServices.getResponseFromChatbot(this.user._id, userMessage, this.temperature, this.user.isOwner).subscribe(async res => {
       if (res.status === "success") {
         this.chatMessages.pop();
         this.playFile();
@@ -114,7 +118,7 @@ export class LoadchatComponent {
         
         const conversationName = this.getWordsUpToFiveSpaces(userMessage);
         // Add message to new conversation
-        this._apiCallServices.addConversation(this.user._id, '672326987f64f5a5569de617', conversationName, userMessage, formattedResponse).subscribe(addRes => {
+        this._apiCallServices.addConversation(this.user._id, this.user.gptAssistant.assistantId, conversationName, userMessage, formattedResponse).subscribe(addRes => {
           if (addRes.success == true) {
             this.conversationId = addRes.conversationId;
           }
@@ -148,7 +152,7 @@ export class LoadchatComponent {
     this.chatMessages.push({ role: 'bot', content: '<img src="https://cdn.pixabay.com/animation/2024/04/02/07/57/07-57-40-974_512.gif" width="60px;"></img>' });
     this.isTextareaDisabled = true;
 
-    this._apiCallServices.getResponseFromChatbot(userMessage).subscribe(async res => {
+    this._apiCallServices.getResponseFromChatbot(this.user._id, userMessage, this.temperature, this.user.isOwner).subscribe(async res => {
       if (res.status === "success") {
         this.chatMessages.pop();
         this.playFile();

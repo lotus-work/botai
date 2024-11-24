@@ -1,49 +1,77 @@
-<header class="navbar-light bg-white sticky-top p-2 border-bottom" *ngIf="auth.user$ | async as user">
-    <div class="container-fluid">
-        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none logo"><img
-                    src="https://motiongraphicplus.com/wp-content/uploads/2023/09/open-ai-logo.png" width="130px"
-                    alt="" /></a>
+<header class="navbar navbar-expand-lg navbar-light bg-white sticky-top p-2 border-bottom" *ngIf="auth.user$ | async as user">
+  <div class="container-fluid">
+      <!-- Navbar Brand -->
+      <a class="navbar-brand" href="#" *ngIf="userData.appLogo == null">{{ userData.appName }}</a>
+      <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none logo" *ngIf="userData.appLogo != null">
+          <img src="{{ userData.appLogo }}" width="50px" alt="" />
+      </a>
 
-            <ul class="nav col-12 col-lg-auto ms-lg-auto mb-2 justify-content-center mb-md-0 me-md-4">
-                <li>
-                    <a href="dashboard" class="nav-link px-2 link-dark">Dashboard</a>
-                </li>
-                <li>
-                    <a href="" class="nav-link px-2 link-dark">New Chat</a>
-                </li>
-                <!-- <li>
-                    <a href="help" class="nav-link px-2 link-dark">Help </a>
-                </li> -->
-            </ul>
-            <div class="dropdown text-end">
-                <a href="#" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false"
-                    class="d-block link-dark text-decoration-none dropdown-toggle"><img alt="mdo" width="42" height="42"
-                        class="rounded-circle" src="{{ user.picture }}" /></a>
-                <ul aria-labelledby="dropdownUser1" class="dropdown-menu text-small" style="">
-                    <li>
-                        <a href="#" class="dropdown-item">Welcome : {{ user.name }}</a>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider" />
-                    </li>
-                    <li>
-                        <a href="/exportchats" class="dropdown-item">Export Chats</a>
-                    </li>
-                    <li>
-                        <a href="/integrate-website" class="dropdown-item">Integrate Website</a>
-                    </li>
-                    <li>
-                        <a href="/settings" class="dropdown-item">Settings</a>
-                    </li>
-                   
-                    <li *ngIf="auth.isAuthenticated$ | async">
-                        <button (click)="logout()" class="dropdown-item">
-                            <i aria-hidden="true" class="fa fa-sign-out"></i> Sign Out
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
+      <!-- Toggler button for small screens -->
+      <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+      >
+          <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Collapsible Navbar -->
+      <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                  <a href="dashboard" class="nav-link px-2 link-dark">Dashboard</a>
+              </li>
+              <li class="nav-item">
+                  <a href="" class="nav-link px-2 link-dark">New Chat</a>
+              </li>
+              <!-- Uncomment if needed -->
+              <!-- <li class="nav-item">
+                  <a href="help" class="nav-link px-2 link-dark">Help</a>
+              </li> -->
+          </ul>
+          <div class="dropdown text-start ms-lg-3">
+              <a
+                  href="#"
+                  id="dropdownUser1"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  class="d-block link-dark text-decoration-none dropdown-toggle"
+              >
+                  <img
+                      alt="user avatar"
+                      width="42"
+                      height="42"
+                      class="rounded-circle"
+                      src="{{ user.picture }}"
+                  />
+              </a>
+              <ul aria-labelledby="dropdownUser1" class="dropdown-menu text-small dropdown-menu-end">
+                  <li>
+                      <a href="#" class="dropdown-item">Welcome: {{ user.name }}</a>
+                  </li>
+                  <li>
+                      <hr class="dropdown-divider" />
+                  </li>
+                  <li>
+                      <a href="/exportchats" class="dropdown-item">Export Chats</a>
+                  </li>
+                  <li>
+                      <a href="/integrate-website" class="dropdown-item">Integrate Website</a>
+                  </li>
+                  <li>
+                      <a href="/settings" class="dropdown-item">Settings</a>
+                  </li>
+                  <li *ngIf="auth.isAuthenticated$ | async">
+                      <button (click)="logout()" class="dropdown-item">
+                          <i aria-hidden="true" class="fa fa-sign-out"></i> Sign Out
+                      </button>
+                  </li>
+              </ul>
+          </div>
+      </div>
+  </div>
 </header>

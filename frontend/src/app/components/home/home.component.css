@@ -1,6 +1,8 @@
+
 .chat {
   background-color: rgb(255, 255, 255);
 }
+
 .btn{
     text-align: left;
 
@@ -70,6 +72,11 @@ li:hover i.fa-ellipsis-h {
   background: #ececec;
 }
 
+@media only screen and (max-width: 600px) {
+  .left-area {
+    background-color: rgb(255, 255, 255);
+  }
+}
 .left-area .row {
   flex-grow: 1;
 }
@@ -95,4 +102,17 @@ li:hover i.fa-ellipsis-h {
 
 .bold-text {
   font-weight: bold;
+}
+
+.sticky-btn {
+  position: fixed;
+  top: 170px;  /* Adjust the distance from the top */
+  left: 1px; /* Adjust the distance from the left */
+  z-index: 1050;  /* Ensures the button is above other content */
+  border-radius: 50%;  /* Makes the button round */
+  padding: 5px;  /* Adjust padding for button size */
+}
+
+.sticky-btn i {
+  font-size: 24px;  /* Adjust the icon size */
 }

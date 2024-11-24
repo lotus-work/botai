@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
 })
 export class AdAddUserComponent {
   userData = {
+    appName: '',
+    appLogo : '',
     name: '',
     phoneNumber: '',
     emailAddress: '',

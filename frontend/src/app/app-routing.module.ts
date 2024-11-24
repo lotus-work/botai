@@ -47,7 +47,7 @@ const routes: Routes = [
   { path: "admin/user/add", component: AdAddUserComponent , canActivate:[AdAuthGuardService]},
   { path: "admin/user/edit/:id", component: AdEditUserComponent , canActivate:[AdAuthGuardService]},
   { path: "admin/user/customkb", component: AdUserCustomKbComponent , canActivate:[AdAuthGuardService]},
-  { path: "admin/user/useage-stats/:id", component: AdUserUsageStatsComponent , canActivate:[AdAuthGuardService]}
+  { path: "admin/user/useage-stats/:id/:orgid", component: AdUserUsageStatsComponent , canActivate:[AdAuthGuardService]}
 ];
 
 @NgModule({

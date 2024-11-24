@@ -3,6 +3,10 @@ const router = express.Router();
 const Users = require("../models/user");
 const Conversation = require("../models/conversation"); // Correctly import the Conversation model
 const Message = require("../models/message"); // Correctly import the Message model
+const { Organizations } = require('../models/organization');
+const { OrganizationMembers } = require('../models/organizationMember');
+const { GptAssistants } = require('../models/gptAssistant');
+const { Settings } = require('../models/settingsSchema');
 const ApiResponse = require("../utils/apiResponse");
 const archiver = require("archiver");
 const moment = require("moment");
@@ -11,6 +15,8 @@ const path = require("path"); // Add this line
 const fs = require("fs"); // Use the regular fs module for createWriteStream
 const fsPromises = require("fs/promises");
 const EmailService = require("../utils/emailService");
+const axios = require('axios');
+const OpenAI = require('openai');
 
 // POST /conversations - Create a new conversation or add a message to an existing one
 router.post("/add", async (req, res) => {
@@ -19,6 +25,18 @@ router.post("/add", async (req, res) => {
       req.body;
 
     let conversation;
+    let pollingInterval;
+
+    const settings = await Settings.findOne();
+    if (!settings || !settings.chatGPT) {
+      return res.status(500).json({ status: 'error', message: 'ChatGPT settings are not configured.' });
+    }
+
+    const openai = new OpenAI({
+      apiKey: settings.chatGPT.apiKey,
+  });
+
+  const thread = await openai.beta.threads.create();
 
     if (conversationId) {
       // Step 1: Check if the conversation exists
@@ -31,6 +49,7 @@ router.post("/add", async (req, res) => {
     } else {
       // Step 1: Create a new conversation if conversationId is not provided
       conversation = new Conversation({
+        threadId : thread.id,
         userId,
         assistantId,
         conversationName,
@@ -64,16 +83,17 @@ router.post("/add", async (req, res) => {
   }
 });
 
+
 // GET /conversations/:conversationId - Retrieve a conversation by ID and user ID
 router.get("/:conversationId", async (req, res) => {
   try {
     const { conversationId } = req.params;
-    const { userId } = req.query; // Get userId from query parameters
+    const { userId } = req.query;
 
     // Step 1: Find the conversation by ID and user ID
     const conversation = await Conversation.findOne({
       _id: conversationId,
-      userId: userId, // Ensure that the conversation belongs to the user
+      userId: userId,
     });
 
     if (!conversation) {
@@ -138,6 +158,82 @@ router.get("/user/:userId", async (req, res) => {
     });
   }
 });
+
+
+router.post('/chat', async (req, res) => {
+  try {
+    const { userId, message, temperature = 0.7, isOwner, threadId } = req.body;
+
+    if (!userId || !message) {
+      return res.status(400).json({ status: 'error', message: 'User ID and message are required.' });
+    }
+
+    let assistantUserId = userId;
+
+    // If the user is not an owner, find the owner's userId via organization data
+    if (!isOwner) {
+      const memberData = await OrganizationMembers.findOne({ userId });
+      if (!memberData || !memberData.organizationId) {
+        return res.status(404).json({ status: 'error', message: 'Organization not found for the user.' });
+      }
+
+      const organizationData = await Organizations.findOne({ organizationId: memberData.organizationId });
+      if (!organizationData || !organizationData.userId) {
+        return res.status(404).json({ status: 'error', message: 'Owner not found for the organization.' });
+      }
+
+      assistantUserId = organizationData.userId; // Use the owner's userId
+    }
+
+    // Fetch assistant details for the resolved userId
+    const assistantData = await GptAssistants.findOne({ userId: assistantUserId });
+    if (!assistantData || !assistantData.assistantId) {
+      return res.status(404).json({ status: 'error', message: 'Assistant ID not found for the user.' });
+    }
+    const { assistantId } = assistantData;
+
+    // Fetch settings for OpenAI configuration
+    const settings = await Settings.findOne();
+    if (!settings || !settings.chatGPT) {
+      return res.status(500).json({ status: 'error', message: 'ChatGPT settings are not configured.' });
+    }
+
+    const { masterInstruction, apiKey, modelName, url } = settings.chatGPT;
+
+    console.log(assistantId + " " + masterInstruction);
+
+    // Prepare OpenAI request parameters
+    const params = {
+      model: modelName || "gpt-3.5-turbo",
+      messages: [
+        { role: "system", content: masterInstruction },
+        { role: "user", content: message },
+      ],
+      user: assistantId,
+      temperature,
+    };
+
+    // Send request to OpenAI
+    const response = await axios.post(url, params, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+      },
+    });
+
+    // Respond with OpenAI reply response.data.choices[0].message
+    const reply = response.data.choices[0]?.message || "No response generated.";
+    res.json({ response: reply, status: "success" });
+
+  } catch (error) {
+    console.error('Error processing the request:', error.message);
+    res.status(500).json({ status: 'error', message: 'Internal server error. Please try again later.' });
+  }
+});
+
+
+
+
 
 router.get("/export/:conversationId", async (req, res) => {
     try {

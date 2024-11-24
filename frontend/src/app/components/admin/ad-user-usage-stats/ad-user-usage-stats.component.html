@@ -1,55 +1,102 @@
 <app-ad-navbar></app-ad-navbar>
 <section class="mt-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-              <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                  <li class="breadcrumb-item"><a href="admin/home">Home</a></li>
-                  <li class="breadcrumb-item active" aria-current="page">
-                    Useage Stats
-                  </li>
-                </ol>
-              </nav>
-            </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 pb-3">
+        <nav aria-label="breadcrumb">
+          <div class="d-flex justify-content-between align-items-center">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a href="admin/home">Home</a></li>
+              <li class="breadcrumb-item"><a href="admin/users"> Manage Users</a></li>
+              <li class="breadcrumb-item active" aria-current="page">
+                Useage Stats
+              </li>
+            </ol>
           </div>
-        <div class="row">
-          <div class="col-lg-3">
-            <div class="card">
-                <div class="card-body">
-                  <h2>Total Requests</h2>
-                  <p class="card-title">All so far</p>
-                  <h2 class="card-title">1300</h2>
-                </div>
-              </div>
-        </div>
-          <div class="col-lg-3">
-            <div class="card">
-                <div class="card-body">
-                  <h2>Total Requests</h2>
-                  <p class="card-title">October 2024 (this month)</p>
-                  <h2 class="card-title">200</h2>
-                </div>
-              </div>
-        </div>
-        </div>
-        <div class="row my-4">
-          <div class="col-lg-6">
-            <h5 class="fw-bold">2024 Useage History</h5>
-            <div class="card">
-              <div class="card-body">
-                <canvas id="barChart"></canvas>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <h5 class="fw-bold">Members API Requests <small style="font-size: 10px;">(this month)</small></h5>
-            <div class="card">
-              <div class="card-body">
-                <canvas id="userBarChart"></canvas>
-              </div>
-            </div>
+        </nav>
+      </div>
+      <!-- Current Year -->
+      <div class="col-lg-3">
+        <div class="card">
+          <div class="card-body bg-dark text-white">
+            <h2>Total Requests</h2>
+            <p class="card-title">Current Year ({{ currentYear }})</p>
+            <h2 class="card-title">{{ totalRequestsCurrentYear }}</h2>
           </div>
         </div>
+      </div>
+
+      <!-- Last Year -->
+      <div class="col-lg-3">
+        <div class="card">
+          <div class="card-body bg-light">
+            <h2>Total Requests</h2>
+            <p class="card-title">Last Year ({{ lastYear }})</p>
+            <h2 class="card-title">{{ totalRequestsLastYear }}</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Month -->
+      <div class="col-lg-3">
+        <div class="card">
+          <div class="card-body bg-dark text-white">
+            <h2>Total Requests</h2>
+            <p class="card-title">{{ currentMonthName }}</p>
+            <h2 class="card-title">{{ totalRequestsCurrentMonth }}</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- Last Month -->
+      <div class="col-lg-3">
+        <div class="card">
+          <div class="card-body bg-light">
+            <h2>Total Requests</h2>
+            <p class="card-title">{{ lastMonthName }}</p>
+            <h2 class="card-title">{{ totalRequestsLastMonth }}</h2>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <div class="row my-4">
+      <hr />
+      <label for="startDate">Filter Useage by Start & End Date</label>
+      <div class="col-lg-4 d-flex">
+        <input id="startDate" type="date" [(ngModel)]="startDate" class="form-control me-2" />
+        <input id="endDate" type="date" [(ngModel)]="endDate" class="form-control" />
+      </div>
+      <div class="col-lg-4">
+        <button (click)="onFetchData()" class="btn btn-primary mt-4">
+          Fetch Usage Stats
+        </button>
+      </div>
+    </div>
+
+    <div class="row my-4">
+      <div class="col-lg-12">
+        <h5 class="fw-bold">
+          {{ this.formattedStartDate }} - {{ this.formattedEndDate }} Usage
+          History
+        </h5>
+        <div class="card">
+          <div class="card-body">
+            <canvas id="barChart"></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-12 mt-5">
+        <h5 class="fw-bold">
+          {{ this.formattedStartDate }} -
+          {{ this.formattedEndDate }} Organization Member History
+        </h5>
+        <div class="card">
+          <div class="card-body">
+            <canvas id="orgBarChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>

@@ -10,45 +10,22 @@ export class ChatService {
 
   constructor(private http: HttpClient) { }
    
-  rootURL3 = "https://api.michaelthehomebuyer.ca/"
+rootURL3 = "https://api.michaelthehomebuyer.ca/"
  private apiUrl = `https://botai-7k46.onrender.com/conversation/`;
   dialogflowAPI = "https://api.michaelthehomebuyer.ca/"
-
-  mhbAdvisorAPI( fullName: string, email: string, phoneNumber: string, streetAddress: string, ownedProperty: string, sizeProperty: string, numberOfBedroom: string, numberOfBathroom: string, desiredSellingPrice: string, 
-    currentCondition: string, motiveSellProperty: string, propertyType: string, sellingTimeline: string): Observable<any> {
-    return this.http.post<any>(this.rootURL3 + "michael-the-home-buyer/mhb-advisor", {
-      fullName: fullName,
-      email: email,
-      phoneNumber: phoneNumber,
-      streetAddress: streetAddress,
-      ownedProperty: ownedProperty,
-      sizeProperty: sizeProperty,
-      numberOfBedroom: numberOfBedroom,
-      numberOfBathroom: numberOfBathroom,
-      desiredSellingPrice: desiredSellingPrice,
-      currentCondition:currentCondition,
-      motiveSellProperty: motiveSellProperty,
-      propertyType: propertyType,
-      sellingTimeline: sellingTimeline
-    }).pipe(catchError(this.errorHandler));
-  }
   
-  getResponseFromChatbot(message: string): Observable<any> {
-    return this.http.post<any>(this.dialogflowAPI + "fred/chat", {
-      message: message
+  getResponseFromChatbot(userId: string, message: string, temperature: number, isOwner: boolean): Observable<any> {
+    return this.http.post<any>(this.apiUrl + "chat", {
+      userId : userId,
+      message: message,
+      temperature: temperature,
+      isOwner : isOwner
     }).pipe(catchError(this.errorHandler));
   }
 
   getAllChatsByUserId(userId: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}user/${userId}`)
       .pipe(catchError(this.errorHandler));
-  }
-
-  getCatchResponse(): Observable<any> {
-    const url = this.rootURL3 + "michael-the-home-buyer/mhb-advisor/instruction";
-
-    // Make the HTTP GET request
-    return this.http.get<any>(url);
   }
 
    // Method 1: Add New Conversation with Initial Message

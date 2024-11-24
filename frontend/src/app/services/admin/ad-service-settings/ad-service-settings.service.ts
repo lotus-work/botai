@@ -20,6 +20,11 @@ export class AdServiceSettingsService {
       .pipe(catchError(this.errorHandler));
   }
 
+  getBasicInfo(page: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/basicinfo`)
+      .pipe(catchError(this.errorHandler));
+  }
+
   getSettings(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/settings`).pipe(
       catchError(this.errorHandler)
@@ -30,6 +35,11 @@ export class AdServiceSettingsService {
     return this.http.put<any>(`${this.apiUrl}/settings`, settingsData).pipe(
       catchError(this.errorHandler)
     );
+  }
+
+  getbasicDashboardStatistics(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/basicDashboardStatistics`)
+      .pipe(catchError(this.errorHandler));
   }
 
   private errorHandler(error: HttpErrorResponse) {

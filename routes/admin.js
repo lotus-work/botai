@@ -28,6 +28,31 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/basicinfo', async (req, res) => {
+    try {
+        const settings = await Settings.findOne();
+
+        if (!settings) {
+            return res.status(404).json({ message: 'Settings not found.' });
+        }
+
+        const basicInfo = {
+            appName: settings.appName,
+            homePageTitle: settings.homePageTitle,
+            companyPhone: settings.companyContact?.phone,
+            companyEmail: settings.companyContact?.emailAddress,
+            companyAddress: settings.companyContact?.fullAddress,
+            websiteMainLogoPath: settings.websiteContent?.mainLogoPath,
+            websiteFaviconPath: settings.websiteContent?.faviconPath,
+        };
+
+        res.status(200).json(basicInfo);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching basic information.', error: error.message });
+    }
+});
+
+
 router.post('/', async (req, res) => {
     const admin = new Admin({
         username: req.body.username,
@@ -123,7 +148,7 @@ router.get('/users', async (req, res) => {
 });
 
 router.post('/user/add', async (req, res) => {
-    const { name, phoneNumber, emailAddress, assistantName, assistantId } = req.body;
+    const { appLogo, appName, name, phoneNumber, emailAddress, assistantName, assistantId } = req.body;
 
     try {
         // Ensure required fields are provided
@@ -139,6 +164,8 @@ router.post('/user/add', async (req, res) => {
 
         // Create and save the new user
         const user = new Users({
+            appName,
+            appLogo,
             name,
             phoneNumber,
             emailAddress,
@@ -211,6 +238,8 @@ router.put('/user/edit/gptassistant/:userId', async (req, res) => {
 router.put('/user/edit/:userId', async (req, res) => {
     const userId = req.params.userId;
     const { 
+        appName,
+        appLogo,
         name, 
         phoneNumber, 
         emailAddress, 
@@ -222,7 +251,7 @@ router.put('/user/edit/:userId', async (req, res) => {
     } = req.body;
 
     try {
-        if (!name && !phoneNumber && !emailAddress && !organizationName && isOwner === undefined && isActive === undefined && !address && !role) {
+        if (!name && !phoneNumber && !emailAddress && !organizationName && isOwner === undefined && isActive === undefined && !address && !role  && !appName  && !appLogo) {
             return res.status(400).json({
                 status: 400,
                 isSuccessful: false,
@@ -232,6 +261,8 @@ router.put('/user/edit/:userId', async (req, res) => {
 
         // Prepare the update payload dynamically
         const updatePayload = {};
+        if (appName) updatePayload.appName = appName;
+        if (appLogo) updatePayload.appLogo = appLogo;
         if (name) updatePayload.name = name;
         if (phoneNumber) updatePayload.phoneNumber = phoneNumber;
         if (emailAddress) updatePayload.emailAddress = emailAddress;
@@ -553,66 +584,70 @@ router.delete('/organization/:organizationId/member/:userId', async (req, res) =
 });
 
 
-router.get('/message-stats', async (req, res) => {
-    const { userId, year } = req.query;
+router.get('/user/message-stats', async (req, res) => {
+    const { userId, startDate, endDate } = req.query;
 
-    if (!userId || !year) {
+    if (!userId) {
         return res.status(400).json({
             status: 400,
             isSuccessful: false,
-            result: { message: 'userId and year are required.' }
+            result: { message: 'userId is required.' }
         });
     }
 
     try {
         // Step 1: Check if the user belongs to any organization
         const organization = await Organizations.findOne({ userId: userId });
-        let userIds = [userId];  // Start with the provided userId as a string (no need for ObjectId())
-        
+        let userIds = [userId]; // Start with the provided userId as a string (no need for ObjectId())
+
         // Step 2: If the user belongs to an organization, get all organization members
         if (organization) {
             const members = await OrganizationMembers.find({ organizationId: organization._id });
-            // Extract userIds of the organization members, convert them to string
             userIds = userIds.concat(members.map(member => member.userId.toString()));
         }
 
-        const startDate = new Date(`${year}-01-01T00:00:00Z`); // Start of the year
-        const endDate = new Date(`${Number(year) + 1}-01-01T00:00:00Z`); // Start of the next year
         const userIdsAsObjectId = userIds.map(id => new mongoose.Types.ObjectId(id));
 
-        // Step 3: Aggregate the messages for all userIds (user + organization members)
+        // Step 3: Build the match query
+        const matchQuery = { userId: { $in: userIdsAsObjectId } };
+
+        // If startDate and endDate are provided, add the date filter
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            matchQuery.createdAt = { $gte: start, $lt: end };
+        }
+
+        // Step 4: Aggregate the messages for all userIds (user + organization members)
         const messageStats = await Message.aggregate([
             {
-                $match: {
-                    userId: { $in: userIdsAsObjectId },  // Match any of the userIds (user + organization members)
-                    createdAt: { $gte: startDate, $lt: endDate }  // Filter messages by the specified year
-                }
+                $match: matchQuery
             },
             {
                 $group: {
-                    _id: { $month: "$createdAt" },  // Group by month using the createdAt field
-                    totalMessages: { $sum: 1 }  // Count the total messages for each month
+                    _id: { $month: "$createdAt" }, // Group by month using the createdAt field
+                    totalMessages: { $sum: 1 }    // Count the total messages for each month
                 }
             },
             {
-                $sort: { "_id": 1 }  // Sort by month (1 for ascending order)
+                $sort: { "_id": 1 } // Sort by month (1 for ascending order)
             },
             {
                 $project: {
-                    month: "$_id",  // Project the month number
-                    totalMessages: 1,  // Include the total message count
-                    _id: 0  // Remove the _id field
+                    month: "$_id",       // Project the month number
+                    totalMessages: 1,    // Include the total message count
+                    _id: 0               // Remove the _id field
                 }
             }
         ]);
 
-        // Step 4: Format the response with month names and corresponding total messages
+        // Step 5: Format the response with month names and corresponding total messages
         const result = {
-            year: parseInt(year),
-            month: []
+            startDate: startDate || "All Time",
+            endDate: endDate || "All Time",
+            months: []
         };
 
-        // Fill in the months (1-12) with zero if no data exists for that month
         const monthNames = [
             "january", "february", "march", "april", "may", "june",
             "july", "august", "september", "october", "november", "december"
@@ -621,7 +656,7 @@ router.get('/message-stats', async (req, res) => {
         // Loop through months (1-12) and fill in the result with the message counts
         for (let i = 1; i <= 12; i++) {
             const monthData = messageStats.find(stat => stat.month === i);
-            result.month.push({
+            result.months.push({
                 [monthNames[i - 1]]: monthData ? monthData.totalMessages : 0
             });
         }
@@ -639,6 +674,183 @@ router.get('/message-stats', async (req, res) => {
         });
     }
 });
+
+router.get('/organization/message-stats/:organizationId', async (req, res) => {
+    const { organizationId } = req.params;
+    const { startDate, endDate } = req.query;
+
+    if (!mongoose.Types.ObjectId.isValid(organizationId)) {
+        return ApiResponse.sendResponse(res, 400, false, { message: 'Invalid organization ID format' });
+    }
+
+    try {
+        // Find the organization to get the owner information
+        const organization = await Organizations.findById(organizationId);
+
+        if (!organization) {
+            return ApiResponse.sendResponse(res, 404, false, { message: 'Organization not found' });
+        }
+
+        // Extract the owner's userId (assuming 'ownerId' is a field in your Organization model)
+        const ownerUserId = organization.userId;
+
+        let ownerName = 'Owner';
+        if (ownerUserId) {
+            // Find the owner in the members collection or user collection
+            const owner = await OrganizationMembers.findOne({ userId: ownerUserId }) || await Users.findById(ownerUserId);
+            if (owner) {
+                ownerName = `${owner.name} (Owner)`;
+            }
+        }
+
+        const messageStats = {};
+
+        // Count messages sent by the owner
+        if (ownerUserId) {
+            const ownerMessageCount = await Message.countDocuments({
+                userId: ownerUserId,
+                createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) }
+            });
+            messageStats[ownerName] = ownerMessageCount; // Owner's message count with name
+        }
+
+        // Find all members of the organization
+        const members = await OrganizationMembers.find({ organizationId });
+
+        if (members.length === 0) {
+            return ApiResponse.sendResponse(res, 200, false, { message: 'No members found for this organization.' });
+        }
+
+        // Iterate over each member to get message counts within the date range
+        for (const member of members) {
+            if (member.userId === ownerUserId) continue; // Skip owner as it's already included
+
+            const messageCount = await Message.countDocuments({
+                userId: member.userId,
+                createdAt: { $gte: new Date(startDate), $lte: new Date(endDate) }
+            });
+
+            messageStats[member.name] = messageCount; // Map the member's name to their message count
+        }
+
+        return ApiResponse.sendResponse(res, 200, true, {
+            message: 'Message statistics retrieved successfully.',
+            stats: messageStats
+        });
+
+    } catch (err) {
+        console.error(err);
+        return ApiResponse.sendResponse(res, 500, false, { message: 'Error retrieving message statistics', error: err.message });
+    }
+});
+
+router.get('/basicDashboardStatistics', async (req, res) => {
+    try {
+        const totalOrganizations = await Organizations.countDocuments();
+
+        // Step 2: Count the total number of owners (assuming 'ownerId' field in Organization model represents the owner)
+        const totalOwners = await Users.countDocuments({ role: 'User' });
+
+        // Step 3: Count the total number of non-owners (i.e., excluding owners)
+        const totalNonOwners = await Users.countDocuments({ role: { $ne: 'User' } });
+
+        const currentGptModel = process.env.CHATGPT_MODEL || 'not set';
+        // Step 5: Send the response
+        return ApiResponse.sendResponse(res, 200, true, {
+            message: 'Statistics retrieved successfully.',
+            details: {
+                totalOrganizations,
+                totalOwners,
+                totalNonOwners,
+                currentGptModel
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        return ApiResponse.sendResponse(res, 500, false, { message: 'Error retrieving statistics', error: err.message });
+    }
+});
+
+router.get('/allUser/stats', async (req, res) => {
+    const { startDate, endDate } = req.query;
+
+    try {
+        // Step 1: Get all active users from the Users collection
+        const activeUsers = await Users.find({ isActive: true }); // Assuming there's an 'isActive' field to indicate active users
+        if (!activeUsers || activeUsers.length === 0) {
+            return ApiResponse.sendResponse(res, 404, false, { message: 'No active users found' });
+        }
+
+        const userIds = activeUsers.map(user => user._id);
+
+        // Step 2: Build the match query for message stats
+        const matchQuery = { userId: { $in: userIds } };
+
+        // If startDate and endDate are provided, add the date filter
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            matchQuery.createdAt = { $gte: start, $lt: end };
+        }
+
+        // Step 3: Aggregate the messages for all active users
+        const messageStats = await Message.aggregate([
+            {
+                $match: matchQuery
+            },
+            {
+                $group: {
+                    _id: { $month: "$createdAt" }, // Group by month using the createdAt field
+                    totalMessages: { $sum: 1 }    // Count the total messages for each month
+                }
+            },
+            {
+                $sort: { "_id": 1 } // Sort by month (1 for ascending order)
+            },
+            {
+                $project: {
+                    month: "$_id",       // Project the month number
+                    totalMessages: 1,    // Include the total message count
+                    _id: 0               // Remove the _id field
+                }
+            }
+        ]);
+
+        // Step 4: Format the response with month names and corresponding total messages
+        const result = {
+            startDate: startDate || "All Time",
+            endDate: endDate || "All Time",
+            months: []
+        };
+
+        const monthNames = [
+            "january", "february", "march", "april", "may", "june",
+            "july", "august", "september", "october", "november", "december"
+        ];
+
+        // Loop through months (1-12) and fill in the result with the message counts
+        for (let i = 1; i <= 12; i++) {
+            const monthData = messageStats.find(stat => stat.month === i);
+            result.months.push({
+                [monthNames[i - 1]]: monthData ? monthData.totalMessages : 0
+            });
+        }
+
+        res.status(200).json({
+            status: 200,
+            isSuccessful: true,
+            result
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            status: 500,
+            isSuccessful: false,
+            result: { message: 'Error fetching user message stats: ' + err.message }
+        });
+    }
+});
+
 
 
 // Helper function to get month name

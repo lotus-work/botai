@@ -10,7 +10,7 @@ import { AdServiceSettingsService } from '../../services/admin/ad-service-settin
 })
 export class AboutUsComponent implements OnInit {
   aboutUsContent: string = '';
-
+  basicinfo: any = [];
   constructor(
     private pageSettingsService: AdServiceSettingsService,
     private spinner: NgxSpinnerService,
@@ -19,6 +19,10 @@ export class AboutUsComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchAboutUsContent();
+    const basicDetails = localStorage.getItem('basicInfo');
+    if (basicDetails) {
+      this.basicinfo = JSON.parse(basicDetails);
+    }
   }
 
   fetchAboutUsContent(): void {

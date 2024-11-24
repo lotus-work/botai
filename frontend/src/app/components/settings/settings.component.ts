@@ -39,6 +39,8 @@ export class SettingsComponent {
   updateUser() {
     const userId = this.user._id;
     const updatedData = {
+      appName : this.user.appName,
+      appLogo : this.user.appLogo,
       name: this.user.name,
       phoneNumber: this.user.phoneNumber,
       address: this.user.address

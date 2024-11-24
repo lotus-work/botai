@@ -6,6 +6,7 @@ import { ChatService } from '../../services/chat/chat.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { NgToastService } from 'ng-angular-popup';
 import { Console } from 'console';
+import { AdServiceSettingsService } from '../../services/admin/ad-service-settings/ad-service-settings.service';
 
 @Component({
   selector: 'app-home',
@@ -20,10 +21,11 @@ export class HomeComponent {
   olderConversations: any[] = [];
   selectedConversationId: string = '';
   selectedUserId: string = '';
-  constructor(public auth: AuthService, private router: Router, private userService: UserService, private chatService: ChatService,    private spinner: NgxSpinnerService,
+  constructor(public auth: AuthService, private router: Router, private userService: UserService, private chatService: ChatService,  private spinner: NgxSpinnerService,
     private _toast: NgToastService ) {
     
     }
+    
 
   ngOnInit() {
     this.auth.isAuthenticated$.subscribe((isAuthenticated) => {
@@ -45,7 +47,14 @@ export class HomeComponent {
               .subscribe({
                 next: (response) => {
                   if (response.isSuccessful) {
-                    localStorage.setItem('user', JSON.stringify(response.result.user));
+                    const userWithOrganization = {
+                      ...response.result.user,
+                      organization: response.result.organization,
+                      gptAssistant : response.result.gptAssistant
+                    };
+      
+                    // Store the combined object in localStorage
+                    localStorage.setItem('user', JSON.stringify(userWithOrganization));
                     console.log(response.result.user._id);
                       this.getAllChats(response.result.user._id);
                     window.location.reload();
@@ -73,6 +82,7 @@ export class HomeComponent {
       console.log(this.user);
     }
   }
+
 
   checkAuthKeysExist(): boolean {
     const keys = Object.keys(localStorage);

@@ -26,6 +26,14 @@
             <label for="email" class="form-label">Email address</label>
             <input type="email" class="form-control" id="email" name="email" [(ngModel)]="userData.emailAddress" required />
           </div>
+          <div class="mb-3">
+            <label for="appName" class="form-label">App Name</label>
+            <input type="text" class="form-control" id="appName" name="appName" [(ngModel)]="userData.appName" required />
+          </div>
+          <div class="mb-3">
+            <label for="appLogo" class="form-label">App Logo</label>
+            <input type="text" class="form-control" id="appLogo" name="appLogo" [(ngModel)]="userData.appLogo" required />
+          </div>
 
           <p class="fw-bold pt-3">Add Chat GPT Assistant</p>
           <div class="mb-3">

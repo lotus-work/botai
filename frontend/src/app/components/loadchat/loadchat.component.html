@@ -12,7 +12,7 @@
             <!-- Static message from bot to greet the user -->
             <div class="d-flex justify-content-start mb-4">
               <div class="img_cont_msg">
-                <img src="https://mikey.michaelthehomebuyer.ca/assets/image/mikey_logo.png" class="rounded-circle user_img_msg">
+                <img src="{{this.basicinfo.websiteMainLogoPath}}" class="rounded-circle user_img_msg">
               </div>
               <div class="msg_cotainer_send" id="bot-msg">
                 Hi, {{user?.name}}. How can I assist you today?
@@ -32,7 +32,7 @@
       <ng-template #botMessage>
         <div class="d-flex justify-content-start mb-4">
           <div class="img_cont_msg">
-            <img src="https://mikey.michaelthehomebuyer.ca/assets/image/mikey_logo.png" class="rounded-circle user_img_msg">
+            <img src="{{this.basicinfo.websiteMainLogoPath}}" class="rounded-circle user_img_msg">
           </div>
           <div class="msg_cotainer_send" id="bot-msg">
             <div [innerHTML]="message.content"></div>
