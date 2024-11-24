@@ -268,7 +268,7 @@ router.get('/organization/members/update/status/:encryptedUserId/:encryptedOrgan
             <p>Organization ID: ${organizationId}</p>
             <p>User ID: ${userId}</p>
             <p>New Status: ${isActive}</p>
-            <p><a href="${process.env.BASE_URL}">Click here to login</a></p>
+            <p><a href="https://botai-7k46.onrender.com">Click here to login</a></p>
         `);
     } catch (error) {
         console.error(`Error updating isActive status: ${error.message}`);
