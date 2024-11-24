@@ -34,7 +34,8 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+               "src/_redirects"
             ],
             "styles": [
               "./node_modules/ngx-spinner/animations/ball-scale-multiple.css",
@@ -99,7 +100,8 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+               "src/_redirects"
             ],
             "styles": [
               "src/styles.css"
