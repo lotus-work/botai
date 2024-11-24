@@ -68,7 +68,7 @@
                   <th scope="col">#</th>
                   <th scope="col">Name</th>
                   <th scope="col">Email Address</th>
-                  <th scope="col">Action</th>
+                  <!-- <th scope="col">Action</th> -->
                 </tr>
               </thead>
               <tbody>
@@ -76,7 +76,7 @@
                   <th scope="row">{{ i + 1 }}</th>
                   <td>{{ member.name }} <span style="font-size: 12px;">({{member.createdAt | date:'mediumDate'}})</span></td>
                   <td>{{ member.email }}</td>
-                  <td><button class="btn btn-danger" (click)="removeMember(member.userId)">Remove</button></td>
+                  <!-- <td><button class="btn btn-danger" (click)="removeMember(member.userId)">Remove</button></td> -->
                 </tr>
               </tbody>
             </table>
