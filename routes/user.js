@@ -206,7 +206,7 @@ router.post('/organization/members/add', async (req, res) => {
 
         const encryptedUserId = encrypt(user._id.toString());
         const encryptedOrganizationId = encrypt(organizationId);
-        const activationUrl = `${process.env.BASE_API_URL}/user/organization/members/update/status/${encryptedUserId}/${encryptedOrganizationId}?q=status=true`;
+        const activationUrl = `https://botai-7k46.onrender.com/user/organization/members/update/status/${encryptedUserId}/${encryptedOrganizationId}?q=status=true`;
 
         console.log('Activation URL:', activationUrl); // Debugging
 
