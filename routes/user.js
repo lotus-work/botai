@@ -16,6 +16,7 @@ router.post('/add', async (req, res) => {
 
     try {
         let user = await Users.findOne({ emailAddress });
+        console.log(user);
         let gptAssistant;
         if (user) {
             // Check if the user is the owner or not
@@ -53,7 +54,8 @@ router.post('/add', async (req, res) => {
 
                 ApiResponse.sendResponse(res, 200, true, { message: 'User logged in successfully', user , gptAssistant});
             }
-        } else {
+        }
+        if(user == null){
             ApiResponse.sendResponse(res, 200, false, {
                 message: 'You have to be added or invited by the admin.'
             });
@@ -189,7 +191,7 @@ router.post('/organization/members/add', async (req, res) => {
                 userId: user._id,
                 organizationId
             });
-
+          
             if (existingMember) {
                 return ApiResponse.sendResponse(res, 400, false, 'User is already a part of this organization.');
             }
@@ -202,6 +204,9 @@ router.post('/organization/members/add', async (req, res) => {
             email: user.emailAddress,
             isActive: false
         });
+        const organizationInfo = await Organizations.findOne({
+            _id : organizationId
+        });
         await newMember.save();
 
         const encryptedUserId = encrypt(user._id.toString());
@@ -211,8 +216,8 @@ router.post('/organization/members/add', async (req, res) => {
         console.log('Activation URL:', activationUrl); // Debugging
 
         const subject = 'You are Invited!';
-        const text = `Hello ${name}, you have been invited to join the organization. Activate here: ${activationUrl}`;
-        const html = `<p>Hello ${name},</p><p>You have been invited to join the organization.</p><p>Activate here: <a href="${activationUrl}">Activate</a></p>`;
+        const text = `Hello ${name}, you have been invited to join the organization - ${organizationInfo.name}. Activate here: ${activationUrl}`;
+        const html = `<p>Hello ${name},</p><p>You have been invited to join the organization - ${organizationInfo.name}.</p><p>Activate here: <a href="${activationUrl}">Activate</a></p>`;
 
         await EmailService.sendEmail(emailAddress, subject, text, html);
 
@@ -250,6 +255,11 @@ router.get('/organization/members/update/status/:encryptedUserId/:encryptedOrgan
             { isActive }
         );
 
+        const organizationInfo = await Organizations.findOne({
+            organizationId
+        });
+
+
         const updateUser = await Users.updateOne(
             { _id: userId },
             { isActive }
@@ -264,10 +274,7 @@ router.get('/organization/members/update/status/:encryptedUserId/:encryptedOrgan
 
         res.status(200).send(`
             <h1>Success</h1>
-            <p>The status has been successfully updated.</p>
-            <p>Organization ID: ${organizationId}</p>
-            <p>User ID: ${userId}</p>
-            <p>New Status: ${isActive}</p>
+            <p>The status has been successfully updated. Welcome from - ${organizationInfo.name} !</p>
             <p><a href="https://chatgptbotai.netlify.app">Click here to login</a></p>
         `);
     } catch (error) {
@@ -329,14 +336,14 @@ router.delete('/remove-user-from-org/:userId', async (req, res) => {
         }
 
         // Remove the user from the OrganizationMembers collection
-        await OrganizationMembers.deleteOne({ userId });
+        await OrganizationMembers.deleteOne({  _id: userId  });
 
         // Remove associated messages
         await Message.deleteMany({ userId });
 
         // Remove associated conversations
         await Conversation.deleteMany({ userId });
-
+        await Users.deleteOne({ _id : userId });
         // Send a success response
         return res.status(200).json({
             status: 200,

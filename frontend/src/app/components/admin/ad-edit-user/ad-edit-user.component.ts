@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdServiceUsersService } from '../../../services/admin/ad-service-users/ad-service-users.service';
 import { UserService } from '../../../services/user/user.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-ad-edit-user',
@@ -34,6 +35,7 @@ export class AdEditUserComponent implements OnInit {
     private router: Router,
     private adUserService: AdServiceUsersService,
     private userService: UserService,
+    private spinner: NgxSpinnerService,
   ) {}
 
   ngOnInit() {
@@ -48,8 +50,12 @@ export class AdEditUserComponent implements OnInit {
   }
 
   getUserDetails() {
+    this.spinner.show();
     this.adUserService.getUserDetails(this.userId).subscribe(
       (response: any) => {
+        setTimeout(() => {
+          this.spinner.hide();
+        }, 1000);
         this.userInfo = response.result;
         this.userData.appName = response.result.appName || '',
         this.userData.appLogo = response.result.appLogo || '',
@@ -65,18 +71,29 @@ export class AdEditUserComponent implements OnInit {
         this.organizationMembers = response.result.organizationMembers || [];
       },
       error => {
+        setTimeout(() => {
+          this.spinner.hide();
+        }, 1000);
         alert('Error fetching user details: ' + error);
+        window.location.reload();
       }
     );
   }
 
   updateUserDetails() {
+    this.spinner.show();
     this.adUserService.updateUserDetails(this.userId, this.userData).subscribe(
       () => {
+        setTimeout(() => {
+          this.spinner.hide();
+        }, 1000);
         alert('User updated successfully!');
         window.location.reload();
       },
       error => {
+        setTimeout(() => {
+          this.spinner.hide();
+        }, 1000);
         alert('Error updating user:'+ error);
         window.location.reload();
       }
@@ -85,13 +102,20 @@ export class AdEditUserComponent implements OnInit {
 
   removeMember(organizationId: string, memberId: string) {
     if (confirm('Are you sure you want to remove this member from the organization?')) {
+      this.spinner.show();
       this.adUserService.deleteUserFromOrganization(organizationId, memberId).subscribe(
         (response: any) => {
+          setTimeout(() => {
+            this.spinner.hide();
+          }, 1000);
           // Remove the member from the UI list after deletion
           this.organizationMembers = this.organizationMembers.filter(member => member.userId !== memberId);
           alert('Member removed successfully!');
         },
         error => {
+          setTimeout(() => {
+            this.spinner.hide();
+          }, 1000);
           console.error('Error removing member:', error);
         }
       );
@@ -104,7 +128,11 @@ export class AdEditUserComponent implements OnInit {
   }
 
   sendInvite() {
+    this.spinner.show();
     if (!this.newMember.name || !this.newMember.email) {
+      setTimeout(() => {
+        this.spinner.hide();
+      }, 1000);
       alert('Both name and email are required to send an invite.');
       return;
     }
@@ -114,6 +142,9 @@ export class AdEditUserComponent implements OnInit {
       .addOrganizationMember(organizationId, this.newMember.name, this.newMember.email)
       .subscribe(
         (response: any) => {
+          setTimeout(() => {
+            this.spinner.hide();
+          }, 1000);
           alert('Invite sent successfully!');
           this.organizationMembers.push({
             name: this.newMember.name,
@@ -122,6 +153,9 @@ export class AdEditUserComponent implements OnInit {
           this.newMember = { name: '', email: '' }; // Reset form fields
         },
         (error) => {
+          setTimeout(() => {
+            this.spinner.hide();
+          }, 1000);
           console.error('Error sending invite:', error);
           alert('Failed to send invite. Please try again.');
         }

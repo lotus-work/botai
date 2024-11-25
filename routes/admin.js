@@ -487,9 +487,9 @@ router.delete('/user/:userId', async (req, res) => {
     session.startTransaction();
 
     try {
-        // Delete the user record
-        const deletedUser = await Users.findByIdAndDelete(userId).session(session);
-        if (!deletedUser) {
+        // Find the user and ensure they exist
+        const user = await Users.findById(userId).session(session);
+        if (!user) {
             await session.abortTransaction();
             return res.status(404).json({
                 status: 404,
@@ -498,21 +498,37 @@ router.delete('/user/:userId', async (req, res) => {
             });
         }
 
-        // Delete related records if they exist
-        // Delete related GptAssistants records
+        // Delete related GptAssistants records for the user
         await GptAssistants.deleteMany({ userId }).session(session);
 
-        // Delete related Messages records
+        // Delete user's Conversations and Messages directly
+        await Conversation.deleteMany({ userId }).session(session);
         await Message.deleteMany({ userId }).session(session);
 
-        // Delete related Conversations records
-        await Conversation.deleteMany({ userId }).session(session);
+        // Fetch the user's organization
+        const organization = await Organizations.findOne({ userId }).session(session);
+        if (organization) {
+            const organizationId = organization._id;
 
-        // Delete related Organizations records
-        await Organizations.deleteMany({ userId }).session(session);
+            // Delete all records from OrganizationMembers where organizationId matches
+            const organizationMembers = await OrganizationMembers.find({ organizationId }).session(session);
 
-        // Delete related OrganizationMembers records
-        await OrganizationMembers.deleteMany({ userId }).session(session);
+            // Collect all userIds from OrganizationMembers
+            const memberUserIds = organizationMembers.map(member => member.userId);
+
+            // Delete Conversations and Messages for all collected userIds
+            await Conversation.deleteMany({ userId: { $in: memberUserIds } }).session(session);
+            await Message.deleteMany({ userId: { $in: memberUserIds } }).session(session);
+            await Users.deleteMany({ _id: { $in: memberUserIds } }).session(session);
+            // Delete the organization itself
+            await Organizations.deleteOne({ _id: organizationId }).session(session);
+
+            // Delete organization members
+            await OrganizationMembers.deleteMany({ organizationId }).session(session);
+        }
+
+        // Delete the user itself
+        await Users.findByIdAndDelete(userId).session(session);
 
         // Commit the transaction
         await session.commitTransaction();
@@ -521,7 +537,7 @@ router.delete('/user/:userId', async (req, res) => {
         res.status(200).json({
             status: 200,
             isSuccessful: true,
-            result: { message: 'User and associated records deleted successfully.' },
+            result: { message: 'User and all associated records deleted successfully.' },
         });
     } catch (err) {
         // Abort the transaction in case of an error
@@ -536,6 +552,7 @@ router.delete('/user/:userId', async (req, res) => {
         });
     }
 });
+
 
 
 router.delete('/organization/:organizationId/member/:userId', async (req, res) => {

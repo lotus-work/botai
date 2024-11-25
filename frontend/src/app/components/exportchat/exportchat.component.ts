@@ -55,23 +55,24 @@ export class ExportchatComponent implements OnInit {
         setTimeout(() => {
           this.spinner.hide();
         }, 100);
-        this._toast.success({ detail: "SUCCESS", summary: 'Download started..', position: 'br' });
+        this._toast.success({ detail: "SUCCESS", summary: 'Export success, please check your email', position: 'br' });
+       
 
-        // Create a temporary URL for the Blob to trigger download
-        const url = window.URL.createObjectURL(response);
+        // // Create a temporary URL for the Blob to trigger download
+        // const url = window.URL.createObjectURL(response);
         
-        // Create a link element to programmatically trigger the download
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'chats_export_' + this.startDate + '.zip';  // Default name for the download file
-        document.body.appendChild(a);
-        a.click();
+        // // Create a link element to programmatically trigger the download
+        // const a = document.createElement('a');
+        // a.href = url;
+        // a.download = 'chats_export_' + this.startDate + '.zip';  // Default name for the download file
+        // document.body.appendChild(a);
+        // a.click();
         
-        // Clean up by removing the link element
-        document.body.removeChild(a);
+        // // Clean up by removing the link element
+        // document.body.removeChild(a);
 
-        // Release the object URL
-        window.URL.revokeObjectURL(url);
+        // // Release the object URL
+        // window.URL.revokeObjectURL(url);
       }, error => {
         setTimeout(() => {
           this.spinner.hide();

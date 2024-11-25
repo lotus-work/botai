@@ -432,8 +432,10 @@ router.get("/export/bydate/:startDate/:endDate/:userId?", async (req, res) => {
       }
   
       // Parse dates
-      const start = moment(startDate, "YYYY-MM-DD").startOf("day");
-      const end = moment(endDate, "YYYY-MM-DD").endOf("day");
+      const start = moment(startDate, "YYYY-MM-DD").utc().startOf("day");
+      const end = moment(endDate, "YYYY-MM-DD").add(1, "days").utc().endOf("day");
+      
+      
   
       // Build aggregation pipeline
       const pipeline = [
@@ -451,6 +453,7 @@ router.get("/export/bydate/:startDate/:endDate/:userId?", async (req, res) => {
   
       // Fetch conversations
       const conversations = await Conversation.aggregate(pipeline);
+      console.log(conversations);
       if (!conversations.length) {
         return res.status(404).json({
           success: false,

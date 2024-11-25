@@ -37,13 +37,32 @@ export class HomeComponent {
         this.auth.user$.subscribe(user => {
           if (user) {
          if(user.name && user.email){
-
           const localStorageUser = localStorage.getItem('user');
           if (localStorageUser) {
-            this.user = JSON.parse(localStorageUser);
-            this.getAllChats(this.user._id);
-          }else{
-            
+            this.userService.addUser(user.name, user.email)
+            .subscribe({
+              next: (response) => {
+                if (response.isSuccessful) {
+                  const userWithOrganization = {
+                    ...response.result.user,
+                    organization: response.result.organization,
+                    gptAssistant : response.result.gptAssistant
+                  };
+    
+                  // Store the combined object in localStorage
+                  localStorage.setItem('user', JSON.stringify(userWithOrganization));
+                  console.log(response.result.user._id);
+                    this.getAllChats(response.result.user._id);
+                } else {
+                  this.router.navigate(['unauthorized']);
+                }
+              },
+              error: (err) => {
+                alert('Some error occured, please contact admin :' +  err);
+                this.router.navigate(['unauthorized']);
+              }
+            });
+          }else{      
             this.userService.addUser(user.name, user.email)
               .subscribe({
                 next: (response) => {
@@ -64,8 +83,8 @@ export class HomeComponent {
                   }
                 },
                 error: (err) => {
-                  window.location.reload();
-                  console.error('API error:', err);
+                  alert('Some error occured, please contact admin :' +  err);
+                  this.router.navigate(['unauthorized']);
                 }
               });
           }
@@ -130,12 +149,12 @@ export class HomeComponent {
       next: (response) => {
         if (response.success) {
           const today = new Date();
-          this.todayConversations = response.conversations.filter((conversation: { conversation: { startedAt: string | number | Date; }; }) => {
-            const startedAt = new Date(conversation.conversation.startedAt);
+          this.todayConversations = response.conversations.filter((conversation: { conversation: { updatedAt: string | number | Date; }; }) => {
+            const startedAt = new Date(conversation.conversation.updatedAt);
             return startedAt.toDateString() === today.toDateString();
           });
-          this.olderConversations = response.conversations.filter((conversation: { conversation: { startedAt: string | number | Date; }; }) => {
-            const startedAt = new Date(conversation.conversation.startedAt);
+          this.olderConversations = response.conversations.filter((conversation: { conversation: { updatedAt: string | number | Date; }; }) => {
+            const startedAt = new Date(conversation.conversation.updatedAt);
             return startedAt.toDateString() !== today.toDateString();
           });
         }
