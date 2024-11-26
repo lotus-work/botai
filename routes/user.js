@@ -256,7 +256,7 @@ router.get('/organization/members/update/status/:encryptedUserId/:encryptedOrgan
         );
 
         const organizationInfo = await Organizations.findOne({
-            organizationId
+            _id : organizationId
         });
 
 
