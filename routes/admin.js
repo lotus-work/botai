@@ -16,7 +16,7 @@ const path = require("path");
 const dotenv = require("dotenv");
 const JWT_SECRET = process.env.JWT_SECRET;
 const mongoose = require("mongoose");
-
+const EmailService = require('../utils/emailService');
 dotenv.config();
 
 router.get("/", async (req, res) => {
