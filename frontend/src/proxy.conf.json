@@ -1,6 +1,6 @@
 {
     "/api": {
-      "target": "https://botai-7k46.onrender.com",
+      "target": "https://api.bclone.ai",
       "secure": true,
       "changeOrigin": true,
       "pathRewrite": {

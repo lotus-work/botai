@@ -11,7 +11,7 @@ export class ChatService {
   constructor(private http: HttpClient) { }
    
 rootURL3 = "https://api.michaelthehomebuyer.ca/"
- private apiUrl = `https://botai-7k46.onrender.com/conversation/`;
+ private apiUrl = `https://api.bclone.ai/conversation/`;
   dialogflowAPI = "https://api.michaelthehomebuyer.ca/"
   
   getResponseFromChatbot(userId: string, message: string, temperature: number, isOwner: boolean, threadId: string, conversationId: string): Observable<any> {

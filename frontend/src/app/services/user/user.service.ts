@@ -7,7 +7,7 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = `https://botai-7k46.onrender.com/user`;
+  private apiUrl = `https://api.bclone.ai/user`;
 
   constructor(private http: HttpClient) {}
 

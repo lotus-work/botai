@@ -89,7 +89,7 @@ import { UnauthorizedComponent } from './components/unauthorized/unauthorized.co
       cacheLocation: 'localstorage',
       useRefreshTokens: true, // Replace with your Auth0 client ID
       authorizationParams: {
-        redirect_uri: "https://chatgptbotai.netlify.app"
+        redirect_uri: "https://bclone.ai"
       } 
     })
   ],

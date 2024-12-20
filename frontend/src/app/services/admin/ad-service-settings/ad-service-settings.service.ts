@@ -6,7 +6,7 @@ import { catchError, Observable, throwError } from 'rxjs';
   providedIn: 'root'
 })
 export class AdServiceSettingsService {
-  private apiUrl = `https://botai-7k46.onrender.com/admin`;
+  private apiUrl = `https://api.bclone.ai/admin`;
 
   constructor(private http: HttpClient) {}
   

@@ -211,7 +211,7 @@ router.post('/organization/members/add', async (req, res) => {
 
         const encryptedUserId = encrypt(user._id.toString());
         const encryptedOrganizationId = encrypt(organizationId);
-        const activationUrl = `https://botai-7k46.onrender.com/user/organization/members/update/status/${encryptedUserId}/${encryptedOrganizationId}?q=status=true`;
+        const activationUrl = `https://api.bclone.ai/user/organization/members/update/status/${encryptedUserId}/${encryptedOrganizationId}?q=status=true`;
 
         console.log('Activation URL:', activationUrl); // Debugging
 
@@ -275,7 +275,7 @@ router.get('/organization/members/update/status/:encryptedUserId/:encryptedOrgan
         res.status(200).send(`
             <h1>Success</h1>
             <p>The status has been successfully updated. Welcome from - ${organizationInfo.name} !</p>
-            <p><a href="https://chatgptbotai.netlify.app">Click here to login</a></p>
+            <p><a href="https://bclone.ai">Click here to login</a></p>
         `);
     } catch (error) {
         console.error(`Error updating isActive status: ${error.message}`);

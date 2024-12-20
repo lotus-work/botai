@@ -116,7 +116,7 @@ export class HomeComponent {
   }
 
   async logout() {
-    this.auth.logout({ logoutParams: { returnTo: "https://chatgptbotai.netlify.app/login" } });
+    this.auth.logout({ logoutParams: { returnTo: "https://bclone.ai/login" } });
   }
 
   createWorkspace(): void {

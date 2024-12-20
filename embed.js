@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     const iframe = document.createElement("iframe");
-    iframe.src = "https://chatgptbotai.netlify.app";
+    iframe.src = "https://bclone.ai";
     iframe.style.position = "fixed";
     iframe.style.top = "0";
     iframe.style.left = "0";

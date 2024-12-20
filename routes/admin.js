@@ -235,7 +235,7 @@ router.post("/user/add", async (req, res) => {
     Your Information:
     Email: ${emailAddress}
     
-    Please login here: https://chatgptbotai.netlify.app/`;
+    Please login here: https://bclone.ai/`;
 
             const html = `
                 <p>Hello ${name},</p>
@@ -245,7 +245,7 @@ router.post("/user/add", async (req, res) => {
                 <ul>
                     <li>Email: ${emailAddress}</li>
                 </ul>
-                <p>Please login here: <a href="https://chatgptbotai.netlify.app">Login</a></p>
+                <p>Please login here: <a href="https://bclone.ai">Login</a></p>
             `;
 
             await EmailService.sendEmail(emailAddress, subject, text, html);
