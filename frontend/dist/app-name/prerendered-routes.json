@@ -1,0 +1,24 @@
+{
+  "routes": [
+    "/",
+    "/aboutus",
+    "/admin/home",
+    "/admin/login",
+    "/admin/page/settings",
+    "/admin/settings",
+    "/admin/support-tickets",
+    "/admin/user/add",
+    "/admin/user/customkb",
+    "/admin/users",
+    "/customkb",
+    "/dashboard",
+    "/exportchats",
+    "/help",
+    "/integrate-website",
+    "/login",
+    "/privacypolicy",
+    "/settings",
+    "/termsofuse",
+    "/unauthorized"
+  ]
+}
